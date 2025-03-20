@@ -49,128 +49,22 @@ Visit `/docs/project_documentation.md` For details.
 4. **Final Presentation**
 
 ## **📁 Folder Schema**
-D:\FYP
-├── README.md
-├── configs
-│   └── model_config.json
-├── data
-│   ├── datasets
-│   │   ├── final_dataset_01.csv
-│   │   └── final_dataset_02.csv
-│   ├── processed
-│   │   ├── Attack_ICMP.csv
-│   │   ├── Attack_synflood.csv
-│   │   ├── Wireshark_01.csv
-│   │   ├── Wireshark_02.csv
-│   │   ├── attack_traffic_01.csv
-│   │   ├── p3.csv
-│   │   ├── parrot_traffic_01.csv
-│   │   ├── parrot_traffic_02.csv
-│   │   ├── wireshark_dataset_01.csv
-│   │   └── wireshark_dataset_02.csv
-│   └── raw
-│       ├── Attack_ICMP.pcapng
-│       ├── Attack_synflood.pcapng
-│       ├── Wireshark_01.pcapng
-│       ├── Wireshark_02.pcapng
-│       ├── attack_traffic.pcapng
-│       ├── attack_traffic_01.pcapng
-│       ├── parrot_traffic_01.pcapng
-│       └── parrot_traffic_02.pcapng
-├── docs
-│   ├── DD_F24PROJECTA686A (BC210427835).pdf
-│   ├── SRS_F24PROJECTA686A (BC210427835).pdf
-│   └── project_documentation.md
-├── folder_structure.txt
-├── image.png
-├── logs
-│   └── app.log
-├── media
-├── models
-│   ├── CatBoost.ipynb
-│   ├── LightGBM.ipynb
-│   ├── LightGBMn.ipynb
-│   ├── Stacking_ensemble.ipynb
-│   ├── XGBoost.ipynb
-│   ├── XGBoostn.ipynb
-│   ├── ensemble.ipynb
-│   └── trained_models
-│       ├── evaluation_results.csv
-│       ├── lightgbm_intrusion_detection.pkl
-│       ├── meta_scaler.pkl
-│       ├── tabnet_meta_model.pkl
-│       └── xgboost_native_model.pkl
-├── notebooks
-│   ├── data_preprocessing.ipynb
-│   ├── evaluation_metrics.ipynb
-│   ├── exploratory_data_analysis.ipynb
-│   └── pcap_to_csv.ipynb
-├── requirements.txt
-├── src
-│   ├── __init__.py
-│   ├── data_processing.py
-│   ├── feature_extraction.py
-│   ├── model_inference.py
-│   ├── model_training.py
-│   ├── pcap_to_csv.py
-│   └── visualization.py
-├── temp
-│   ├── TabNet.ipynb
-│   ├── data_preparation.ipynb
-│   └── pcap_to_csv.py
-├── tests
-│   ├── data_operations.ipynb
-│   ├── folder_schema.ipynb
-│   ├── pyshark_csv.py
-│   ├── schema.py
-│   └── tshark_csv.py
-└── webapp
-    ├── IDS
-    │   ├── __init__.py
-    │   ├── __pycache__
-    │   │   ├── __init__.cpython-313.pyc
-    │   │   ├── admin.cpython-313.pyc
-    │   │   ├── apps.cpython-313.pyc
-    │   │   ├── models.cpython-313.pyc
-    │   │   ├── urls.cpython-313.pyc
-    │   │   └── views.cpython-313.pyc
-    │   ├── admin.py
-    │   ├── apps.py
-    │   ├── migrations
-    │   │   ├── __init__.py
-    │   │   └── __pycache__
-    │   │       └── __init__.cpython-313.pyc
-    │   ├── models.py
-    │   ├── static
-    │   │   └── css
-    │   │       └── custom.css
-    │   ├── templates
-    │   │   └── IDS
-    │   │       ├── about_us.html
-    │   │       ├── analysis_report.html
-    │   │       ├── base.html
-    │   │       ├── contact_us.html
-    │   │       ├── dashboard.html
-    │   │       ├── file_upload.html
-    │   │       ├── home.html
-    │   │       ├── login.html
-    │   │       └── register.html
-    │   ├── tests.py
-    │   ├── urls.py
-    │   └── views.py
-    ├── IDS_Project
-    │   ├── __init__.py
-    │   ├── __pycache__
-    │   │   ├── __init__.cpython-313.pyc
-    │   │   ├── settings.cpython-313.pyc
-    │   │   ├── urls.cpython-313.pyc
-    │   │   └── wsgi.cpython-313.pyc
-    │   ├── asgi.py
-    │   ├── settings.py
-    │   ├── urls.py
-    │   └── wsgi.py
-    ├── db.sqlite3
-    └── manage.py
+
+![alt text](image.png)
+
+
+[text](folder_structure.txt)
+### **. Common Git Commands for Future Use**
+| Command | Description |
+|---------|------------|
+| `git status` | Check repo status (modified, staged, committed files) |
+| `git add .` | Stage all changes |
+| `git commit -m "message"` | Commit changes with a message |
+| `git push origin main` | Push changes to GitHub |
+| `git pull origin main` | Fetch and merge latest changes from GitHub |
+| `git log --oneline` | Show commit history |
+
+---
 
 
 <h1 style="font-family: 'poppins'; font-weight: bold; color: Green;">👨‍💻Author: MAHBOOB ALAM</h1>

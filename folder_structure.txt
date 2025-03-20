@@ -1,0 +1,111 @@
+D:\FYP
+├── README.md
+├── configs
+│   └── model_config.json
+├── data
+│   ├── datasets
+│   │   ├── final_dataset_01.csv
+│   │   └── final_dataset_02.csv
+│   ├── processed
+│   │   ├── Wireshark_01.csv
+│   │   ├── Wireshark_02.csv
+│   │   ├── attack_traffic_01.csv
+│   │   ├── parrot_traffic_01.csv
+│   │   └── parrot_traffic_02.csv
+│   └── raw
+│       └── attack_traffic_01.pcapng
+├── docs
+│   ├── DD_F24PROJECTA686A (BC210427835).pdf
+│   ├── SRS_F24PROJECTA686A (BC210427835).pdf
+│   └── project_documentation.md
+├── folder_structure.txt
+├── image.png
+├── logs
+│   └── app.log
+├── media
+├── models
+│   ├── CatBoost.ipynb
+│   ├── LightGBM.ipynb
+│   ├── LightGBMn.ipynb
+│   ├── Stacking_ensemble.ipynb
+│   ├── XGBoost.ipynb
+│   ├── XGBoostn.ipynb
+│   ├── ensemble.ipynb
+│   └── trained_models
+│       ├── evaluation_results.csv
+│       ├── lightgbm_intrusion_detection.pkl
+│       ├── meta_scaler.pkl
+│       ├── tabnet_meta_model.pkl
+│       └── xgboost_native_model.pkl
+├── notebooks
+│   ├── data_preprocessing.ipynb
+│   ├── evaluation_metrics.ipynb
+│   ├── exploratory_data_analysis.ipynb
+│   └── pcap_to_csv.ipynb
+├── requirements.txt
+├── src
+│   ├── __init__.py
+│   ├── data_processing.py
+│   ├── feature_extraction.py
+│   ├── model_inference.py
+│   ├── model_training.py
+│   ├── pcap_to_csv.py
+│   └── visualization.py
+├── temp
+│   ├── TabNet.ipynb
+│   ├── data_preparation.ipynb
+│   └── pcap_to_csv.py
+├── tests
+│   ├── data_operations.ipynb
+│   ├── folder_schema.ipynb
+│   ├── pyshark_csv.py
+│   ├── schema.py
+│   ├── test_catboost.ipynb
+│   └── tshark_csv.py
+└── webapp
+    ├── IDS
+    │   ├── __init__.py
+    │   ├── __pycache__
+    │   │   ├── __init__.cpython-313.pyc
+    │   │   ├── admin.cpython-313.pyc
+    │   │   ├── apps.cpython-313.pyc
+    │   │   ├── models.cpython-313.pyc
+    │   │   ├── urls.cpython-313.pyc
+    │   │   └── views.cpython-313.pyc
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── migrations
+    │   │   ├── __init__.py
+    │   │   └── __pycache__
+    │   │       └── __init__.cpython-313.pyc
+    │   ├── models.py
+    │   ├── static
+    │   │   └── css
+    │   │       └── custom.css
+    │   ├── templates
+    │   │   └── IDS
+    │   │       ├── about_us.html
+    │   │       ├── analysis_report.html
+    │   │       ├── base.html
+    │   │       ├── contact_us.html
+    │   │       ├── dashboard.html
+    │   │       ├── file_upload.html
+    │   │       ├── home.html
+    │   │       ├── login.html
+    │   │       └── register.html
+    │   ├── tests.py
+    │   ├── urls.py
+    │   └── views.py
+    ├── IDS_Project
+    │   ├── __init__.py
+    │   ├── __pycache__
+    │   │   ├── __init__.cpython-313.pyc
+    │   │   ├── settings.cpython-313.pyc
+    │   │   ├── urls.cpython-313.pyc
+    │   │   └── wsgi.cpython-313.pyc
+    │   ├── asgi.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   └── wsgi.py
+    ├── db.sqlite3
+    └── manage.py
