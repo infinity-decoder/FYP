@@ -1,0 +1,134 @@
+/* Custom CSS */
+:root {
+    --primary-color: #ED9E59; /* Orange */
+    --secondary-color: #522C5D; /* Violet */
+    --glass-background: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --blur-effect: blur(10px);
+    --text-color: #0B1B32; /* Replacing black */
+    --light-text-color: #fff;
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* General Styles */
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, #29104A 0%, #150016 100%);
+    color: var(--light-text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation Bar */
+.navbar {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 0;
+}
+
+.navbar-brand, .nav-link {
+    color: var(--light-text-color) !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--secondary-color) !important;
+}
+
+/* Auth Containers (Login, Register) */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: var(--glass-shadow);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Dashboard */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border-right: 1px solid var(--glass-border);
+    padding: 1rem;
+}
+
+.main-content {
+    flex: 1;
+    padding: 60px 2rem 2rem; /* Added top padding */
+}
+
+/* About Us */
+.about-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.about-card {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: var(--glass-shadow);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Contact Us */
+.contact-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.contact-card {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: var(--glass-shadow);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border-top: 1px solid var(--glass-border);
+    color: var(--light-text-color);
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: auto;
+}
