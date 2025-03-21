@@ -1,10 +1,10 @@
 #### ***  [ Under Development ]***
 # **Intrusion Detection System (IDS) Using Wireshark and Advanced Ensemble Learning Techniques**
 
-***Clone the Repository if needed.***
+***Clone the Repository if needed.*** <br>
 [![GitHub](https://img.shields.io/badge/GitHub-visit_repository-indigo?style=for-the-badge&logo=github)](https://github.com/infinity-decoder/FYP) 
 
-## **📁 Project Info**
+## **📁 Project Info** <br>
 Visit `/docs/project_documentation.md` For details.
 
 ## **🟢 Assignment files F24PROJECTA686A (BC210427835)**
@@ -50,10 +50,10 @@ Visit `/docs/project_documentation.md` For details.
 
 ## **📁 Folder Schema**
 
-![alt text](image.png)
+![screenshot](image.png)
 
 
-[text](folder_structure.txt)
+[Project schema](folder_structure.txt)
 ### **. Common Git Commands for Future Use**
 | Command | Description |
 |---------|------------|
@@ -74,4 +74,4 @@ Visit `/docs/project_documentation.md` For details.
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?style=for-the-badge&logo=linkedin)](https://pk.linkedin.com/in/infinitydecoder)  
 [![Facebook](https://img.shields.io/badge/Facebook-Profile-blue?style=for-the-badge&logo=facebook)](https://www.facebook.com/infinitydecoder.me) 
 [![Email](https://img.shields.io/badge/Email-Contact%20Me-red?style=for-the-badge&logo=email)](mailto:bc210427835mal@vu.edu.pk)
-inshallah will be finalized till 09MAY2025! 🚀
+<br>inshallah will be finalized till 09MAY2025! 🚀
