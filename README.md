@@ -77,5 +77,6 @@ Visit `/docs/project_documentation.md` For details.
 [![Website](https://img.shields.io/badge/website-visit-indigo?style=for-the-badge&logo=wordpress)](https://www.coursera.org/learner/infinitydecoder) 
 [![profile](https://img.shields.io/badge/portfolio-visit-violet?style=for-the-badge&logo=About.me)](https://profile.infinitydecoder.com/) 
 [![Email](https://img.shields.io/badge/Email-Contact%20Me-black?style=for-the-badge&logo=email)](mailto:bc210427835mal@vu.edu.pk)
+[![Live](https://img.shields.io/badge/webapp-Try%20here-092E20?style=for-the-badge&logo=django)](https://ids.infinitydecoder.com) 
 
 <br>inshallah will be finalized till 09MAY2025! 🚀
