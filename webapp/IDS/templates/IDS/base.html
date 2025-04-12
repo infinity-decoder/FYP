@@ -5,21 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network IDS - {% block title %}{% endblock %}</title>
-    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 </head>
-<body>
-    <!-- Navigation Bar -->
+<body class="{% if user.is_authenticated %}has-sidebar{% endif %}">
+    <!-- Main Navigation (Always visible) -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
@@ -45,14 +41,72 @@
         </div>
     </nav>
 
+    <!-- Sidebar (Only for authenticated users) -->
+    {% if user.is_authenticated %}
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-info">
+                    <span class="username">{{ user.username }}</span>
+                    <small class="role">Network Analyst</small>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{% url 'file_upload' %}" class="nav-item {% if request.resolver_match.url_name == 'file_upload' %}active{% endif %}">
+                <i class="fas fa-file-upload"></i>
+                <span>Upload PCAP</span>
+            </a>
+            
+            <div class="nav-section">
+                <div class="section-header">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Analysis Reports</span>
+                </div>
+                <div class="section-content">
+                    {% if user_files %}
+                        {% for file in user_files %}
+                        <a href="{% url 'analysis_report' file.id %}" class="report-item {% if file.id == current_file.id %}active{% endif %}">
+                            <i class="fas fa-file-code"></i>
+                            <span class="filename">{{ file.filename|truncatechars:20 }}</span>
+                            <span class="status-badge {{ file.status }}">{{ file.get_status_display }}</span>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-reports">
+                            <i class="fas fa-inbox"></i>
+                            <span>No reports yet</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+    {% endif %}
+
     <!-- Main Content -->
-    <main class="container-fluid">
-        {% block content %}
-        {% endblock %}
+    <main class="app-content {% if user.is_authenticated %}with-sidebar{% endif %}">
+        {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="{% if user.is_authenticated %}with-sidebar{% endif %}">
         <div class="container">
             <p class="mb-0">&copy; MAHBOOB ALAM (BC210427835)</p>
         </div>
@@ -60,5 +114,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>
