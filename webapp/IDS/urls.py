@@ -10,5 +10,10 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('file-upload/', views.file_upload, name='file_upload'),
-    path('analysis-report/', views.analysis_report, name='analysis_report'),
+    
+    # ✅ FIXED: Added dynamic file_id for analysis report
+    path('analysis-report/<int:file_id>/', views.analysis_report, name='analysis_report'),
+    
+    # ✅ NEW: Added analyze view URL
+    path('analyze/<int:file_id>/', views.analyze_pcap, name='analyze_pcap'),
 ]

@@ -1,10 +1,16 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404 
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import PcapFile
 from .forms import PcapUploadForm
+import threading
+
+# ✅ Updated import: from BackgroundAnalyzer class
+from .utils.background_processor import BackgroundAnalyzer
+
 
 def home(request):
     """Render the home page for non-authenticated users"""
@@ -49,8 +55,9 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    """Render user dashboard"""
-    return render(request, 'IDS/dashboard.html')
+    """Render user dashboard with uploaded files"""
+    user_files = PcapFile.objects.filter(user=request.user).order_by('-uploaded_at')
+    return render(request, 'IDS/dashboard.html', {'user_files': user_files})
 
 @login_required
 def file_upload(request):
@@ -74,20 +81,40 @@ def file_upload(request):
     return render(request, 'IDS/file_upload.html', {'form': form})
 
 @login_required
+def analyze_pcap(request, file_id):
+    """Trigger background processing of PCAP file"""
+    file = get_object_or_404(PcapFile, id=file_id, user=request.user)
+
+    # Only allow re-analysis if not already processing
+    if file.status not in ['processing', 'completed']:
+        file.status = 'processing'
+        file.save()
+
+        # ✅ Launch the background analyzer thread
+        analyzer = BackgroundAnalyzer(file.id)
+        analyzer.start()
+
+        messages.success(request, f"Analysis started for {file.file.name}")
+    else:
+        messages.warning(request, f"File is already being processed or analyzed.")
+
+    return redirect('analysis_report', file_id=file.id)
+
+@login_required
 def analysis_report(request, file_id):
     """View analysis report for a specific file"""
     file = get_object_or_404(PcapFile, id=file_id, user=request.user)
-    
+
     # Initialize empty result if none exists
     if not file.analysis_result:
         file.analysis_result = {
-            'status': 'pending',
+            'status': file.status,
             'malicious_count': 0,
             'normal_count': 0,
             'total_packets': 0
         }
         file.save()
-    
+
     return render(request, 'IDS/analysis_report.html', {
         'file': file,
         'report': file.analysis_result

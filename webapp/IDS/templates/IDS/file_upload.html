@@ -1,21 +1,42 @@
 {% extends 'IDS/base.html' %}
-{% block title %}Upload File{% endblock %}
+{% load static %}
+
+{% block title %}Upload PCAP{% endblock %}
 
 {% block content %}
-<div class="upload-container">
-    <div class="upload-card">
-        <div class="upload-header">
-            <h2><i class="fas fa-upload"></i> Upload Wireshark File</h2>
-        </div>
-        <div class="upload-body">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="file" class="form-label">Select a Wireshark (.pcap) file</label>
-                    <input type="file" class="form-control" id="file" name="file" accept=".pcap" required>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Upload PCAP File</h5>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Upload and Analyze</button>
-            </form>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Select a PCAP file</label>
+                            <input type="file" class="form-control" name="file" accept=".pcap,.pcapng" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-upload me-1"></i> Upload File
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
         </div>
     </div>
 </div>
