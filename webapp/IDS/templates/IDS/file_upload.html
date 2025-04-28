@@ -9,7 +9,7 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Upload PCAP File</h5>
+                    <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Upload and Analyze PCAP</h5>
                 </div>
                 <div class="card-body">
                     {% if messages %}
@@ -27,9 +27,24 @@
                             <input type="file" class="form-control" name="file" accept=".pcap,.pcapng" required>
                         </div>
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-upload me-1"></i> Upload File
+                            <i class="fas fa-rocket me-1"></i> Analyze Now
                         </button>
                     </form>
+
+                    {% if upload_in_progress %}
+                    <div class="progress mt-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%">
+                            Analysis in Progress...
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if analysis_completed %}
+                    <div class="alert alert-success mt-3">
+                        Analysis completed successfully!
+                        <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-primary ms-2">View Report</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="text-center mt-4">

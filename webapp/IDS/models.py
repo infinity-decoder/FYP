@@ -10,13 +10,9 @@ class PcapFile(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/')  # ✅ Changed from 'pcaps/' to 'uploads/'
+    file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='uploaded'
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='uploaded')
     analysis_result = models.JSONField(null=True, blank=True)
 
     def __str__(self):
@@ -32,7 +28,7 @@ class AnalysisResult(models.Model):
     malicious_count = models.IntegerField()
     normal_count = models.IntegerField()
     malicious_ips = models.JSONField(default=list, blank=True)
-    model_details = models.JSONField(default=dict, blank=True)
+    model_details = models.JSONField(default=dict, blank=True)  # e.g., {model_name: metrics}
     generated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

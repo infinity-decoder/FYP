@@ -11,7 +11,7 @@
         <!-- Upload Card -->
         <div class="card upload-card">
             <div class="card-header">
-                <h5><i class="fas fa-cloud-upload-alt"></i> Quick Upload</h5>
+                <h5><i class="fas fa-cloud-upload-alt"></i> Quick Upload & Analyze</h5>
             </div>
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data" class="upload-form">
@@ -27,11 +27,26 @@
                         <i class="fas fa-rocket"></i> Analyze Now
                     </button>
                 </form>
+
+                {% if upload_in_progress %}
+                <div class="progress mt-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%">
+                        Analysis in Progress...
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if analysis_completed %}
+                <div class="alert alert-success mt-3">
+                    Analysis completed successfully!
+                    <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-primary ms-2">View Report</a>
+                </div>
+                {% endif %}
             </div>
         </div>
 
         <!-- Recent Activity -->
-        <div class="card activity-card">
+        <div class="card activity-card mt-4">
             <div class="card-header">
                 <h5><i class="fas fa-history"></i> Recent Analysis</h5>
             </div>
@@ -62,9 +77,13 @@
                                         </span>
                                     </td>
                                     <td>
+                                        {% if file.status == 'completed' %}
                                         <a href="{% url 'analysis_report' file.id %}" class="btn btn-sm btn-outline-primary">
                                             View Report
                                         </a>
+                                        {% else %}
+                                        <span class="text-muted">Processing...</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -73,8 +92,8 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="no-activity">
-                    <i class="fas fa-folder-open"></i>
+                <div class="no-activity text-center">
+                    <i class="fas fa-folder-open fa-2x text-muted"></i>
                     <p>No analysis performed yet</p>
                 </div>
                 {% endif %}
