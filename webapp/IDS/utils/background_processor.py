@@ -1,3 +1,5 @@
+# webapp/IDS/utils/background_processor.py
+
 import threading
 import traceback
 from .analysis_engine import AnalysisEngine
@@ -10,16 +12,20 @@ class BackgroundAnalyzer(threading.Thread):
 
     def run(self):
         try:
-            print(f"🔧 [BackgroundAnalyzer] Starting analysis for PCAP ID: {self.pcap_id}")
+            print(f"🔧 [Thread] Starting analysis for PCAP ID: {self.pcap_id}")
             pcap_instance = PcapFile.objects.get(id=self.pcap_id)
 
-            # Initialize and run analysis
+            # Start analysis
             engine = AnalysisEngine(pcap_instance)
-            engine.run()
+            result = engine.run()
 
-            print(f"✅ [BackgroundAnalyzer] Analysis completed for PCAP ID: {self.pcap_id}")
+            if result:
+                print(f"✅ [Thread] Analysis completed for: {self.pcap_id}")
+            else:
+                print(f"⚠️ [Thread] Analysis failed for: {self.pcap_id}")
+
         except PcapFile.DoesNotExist:
-            print(f"❌ [BackgroundAnalyzer] PCAP with ID {self.pcap_id} does not exist.")
+            print(f"❌ [Thread] PCAP with ID {self.pcap_id} does not exist.")
         except Exception as e:
-            print(f"❌ [BackgroundAnalyzer] Error: {str(e)}")
+            print(f"❌ [Thread] Unexpected error: {str(e)}")
             traceback.print_exc()

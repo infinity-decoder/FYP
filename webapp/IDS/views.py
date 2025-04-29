@@ -1,9 +1,15 @@
+# webapp/IDS/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import get_template
+from django.views.decorators.csrf import csrf_exempt
+
+from xhtml2pdf import pisa
 from .models import PcapFile, AnalysisResult
 from .forms import PcapUploadForm
 from .utils.background_processor import BackgroundAnalyzer
@@ -45,35 +51,46 @@ def user_login(request):
         messages.error(request, 'Invalid username or password.')
     return render(request, 'IDS/login.html')
 
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home')
+
+
 @login_required
 def dashboard(request):
     user_files = PcapFile.objects.filter(user=request.user).order_by('-uploaded_at')
-    return render(request, 'IDS/dashboard.html', {'user_files': user_files})
+    latest_file = user_files.first()
+    return render(request, 'IDS/dashboard.html', {
+        'user_files': user_files,
+        'latest_file': latest_file,
+        'upload_in_progress': latest_file and latest_file.status == 'processing',
+        'analysis_completed': latest_file and latest_file.status == 'completed'
+    })
+
 
 @login_required
 def file_upload(request):
     if request.method == 'POST':
         form = PcapUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                pcap_file = form.save(commit=False)
-                pcap_file.user = request.user
-                pcap_file.status = 'uploaded'
-                pcap_file.save()
-                messages.success(request, 'PCAP file uploaded successfully! Analysis will begin shortly.')
+            pcap_file = form.save(commit=False)
+            pcap_file.user = request.user
+            pcap_file.status = 'uploaded'
+            pcap_file.save()
 
-                # Start background analysis
-                analyzer = BackgroundAnalyzer(pcap_file.id)
-                analyzer.start()
+            # Trigger background analyzer
+            analyzer = BackgroundAnalyzer(pcap_file.id)
+            analyzer.start()
 
-                return redirect('dashboard')
-            except Exception as e:
-                messages.error(request, f'Error: {str(e)}')
+            messages.success(request, 'File uploaded successfully! Analysis started.')
+            return redirect('analysis_report', file_id=pcap_file.id)
         else:
-            messages.error(request, 'Invalid file format (.pcap or .pcapng only)')
+            messages.error(request, 'Invalid file format.')
     else:
         form = PcapUploadForm()
     return render(request, 'IDS/file_upload.html', {'form': form})
+
 
 @login_required
 def analyze_pcap(request, file_id):
@@ -86,11 +103,12 @@ def analyze_pcap(request, file_id):
         analyzer = BackgroundAnalyzer(file.id)
         analyzer.start()
 
-        messages.success(request, f"Analysis started for {file.file.name}")
+        messages.success(request, f"Analysis started for {file.filename()}")
     else:
-        messages.warning(request, "File is already being processed or completed.")
+        messages.warning(request, "This file is already being processed or completed.")
 
     return redirect('analysis_report', file_id=file.id)
+
 
 @login_required
 def analysis_report(request, file_id):
@@ -98,17 +116,32 @@ def analysis_report(request, file_id):
     detailed_report = None
 
     try:
-        detailed_report = file.detailed_report  # OneToOne link
+        detailed_report = file.detailed_report
     except AnalysisResult.DoesNotExist:
         pass
 
     return render(request, 'IDS/analysis_report.html', {
         'file': file,
-        'report': file.analysis_result,
-        'detailed_report': detailed_report
+        'report_data': detailed_report,
     })
 
-def user_logout(request):
-    logout(request)
-    messages.success(request, 'You have been logged out successfully.')
-    return redirect('home')
+
+@login_required
+def download_report_pdf(request, file_id):
+    file = get_object_or_404(PcapFile, id=file_id, user=request.user)
+    report = file.detailed_report
+
+    template_path = 'IDS/analysis_report_pdf.html'
+    context = {'report_data': report, 'file': file}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{file.filename()}_report.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("PDF generation error", status=500)
+
+    return response

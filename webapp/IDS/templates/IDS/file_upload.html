@@ -4,12 +4,13 @@
 {% block title %}Upload PCAP{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-8">
+
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Upload and Analyze PCAP</h5>
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-file-upload me-1"></i> Upload and Analyze PCAP</h5>
                 </div>
                 <div class="card-body">
                     {% if messages %}
@@ -20,20 +21,21 @@
                             </div>
                         {% endfor %}
                     {% endif %}
+
                     <form method="POST" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="file" class="form-label">Select a PCAP file</label>
-                            <input type="file" class="form-control" name="file" accept=".pcap,.pcapng" required>
+                            <label for="file" class="form-label">Choose PCAP/PCAPNG File</label>
+                            <input type="file" name="file" class="form-control" accept=".pcap,.pcapng" required>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-rocket me-1"></i> Analyze Now
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-bolt me-1"></i> Analyze Now
                         </button>
                     </form>
 
                     {% if upload_in_progress %}
                     <div class="progress mt-3">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:100%">
                             Analysis in Progress...
                         </div>
                     </div>
@@ -41,17 +43,21 @@
 
                     {% if analysis_completed %}
                     <div class="alert alert-success mt-3">
-                        Analysis completed successfully!
-                        <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-primary ms-2">View Report</a>
+                        <i class="fas fa-check-circle me-1"></i> Analysis completed!
+                        <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-primary ms-2">
+                            View Report
+                        </a>
                     </div>
                     {% endif %}
                 </div>
             </div>
+
             <div class="text-center mt-4">
                 <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
                 </a>
             </div>
+
         </div>
     </div>
 </div>

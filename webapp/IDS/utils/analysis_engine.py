@@ -1,3 +1,5 @@
+# webapp/IDS/utils/analysis_engine.py
+
 import os
 import json
 import traceback
@@ -15,32 +17,29 @@ class AnalysisEngine:
         self.filename = os.path.basename(self.pcap_path).replace('.pcap', '').replace('.pcapng', '')
         self.media_root = settings.MEDIA_ROOT
 
-        # Define folders
-        self.upload_dir = os.path.join(self.media_root, 'uploads')
         self.csv_dir = os.path.join(self.media_root, 'csvs')
         self.dataset_dir = os.path.join(self.media_root, 'datasets')
         self.results_dir = os.path.join(self.media_root, 'results')
 
-        # ✅ Make sure all dirs are created
-        os.makedirs(self.upload_dir, exist_ok=True)
+        # Ensure directories exist
         os.makedirs(self.csv_dir, exist_ok=True)
         os.makedirs(self.dataset_dir, exist_ok=True)
         os.makedirs(self.results_dir, exist_ok=True)
 
-        # Initialize utility classes
+        # Init processing classes
         self.converter = PcapConverter()
         self.preprocessor = TrafficPreprocessor()
         self.predictor = IntrusionDetectionPredictor()
 
     def run(self):
         try:
-            print(f"📥 Starting analysis for {self.filename}")
+            print(f"📥 [Engine] Starting analysis for: {self.filename}")
 
-            # Step 1: Convert PCAP to CSV
+            # Step 1: Convert PCAP ➝ CSV
             print("🔄 Converting PCAP to CSV...")
             csv_path = self.converter.convert(self.pcap_path, self.csv_dir)
 
-            # Step 2: Preprocess CSV to dataset
+            # Step 2: Preprocess ➝ Dataset
             print("🧹 Preprocessing CSV data...")
             dataset_path = self.preprocessor.preprocess(csv_path, self.dataset_dir)
             df = self._load_csv(dataset_path)
@@ -48,34 +47,47 @@ class AnalysisEngine:
             if df.empty:
                 raise ValueError("Processed dataset is empty. Cannot proceed with prediction.")
 
-            # Step 3: Predict using ML models
+            # Step 3: Predict
             print("🤖 Running model predictions...")
             results = self.predictor.predict(df)
 
-            # Step 4: Save result as JSON
+            # Step 4: Save predictions to JSON
             json_path = os.path.join(self.results_dir, f"{self.filename}_results.json")
             with open(json_path, 'w') as f:
                 json.dump(results, f, indent=4)
 
-            print(f"✅ Analysis completed. Results saved to {json_path}")
+            print(f"✅ Prediction completed. Results saved to: {json_path}")
 
-            # Step 5: Save result to database
-            analysis_obj = AnalysisResult.objects.create(
-                pcap=self.pcap_instance,
-                result_json=json_path,
-                prediction_summary=self._extract_summary(results)
+            # Step 5: Extract summary
+            ensemble_preds = results.get("ensemble", {}).get("predictions", [])
+            total = len(ensemble_preds)
+            malicious = sum(ensemble_preds)
+            benign = total - malicious
+            malicious_ips = self._extract_malicious_ips(df, ensemble_preds)
+
+            # Step 6: Save to DB
+            analysis_result = AnalysisResult.objects.create(
+                pcap_file=self.pcap_instance,
+                total_packets=total,
+                malicious_count=malicious,
+                normal_count=benign,
+                malicious_ips=malicious_ips,
+                model_details=results
             )
-            self.pcap_instance.status = 'completed'  # ✅ Matches views.py logic
+
+            self.pcap_instance.status = 'completed'
             self.pcap_instance.analysis_result = {
                 "status": "completed",
-                **self._generate_summary_dict(results)
+                "total_packets": total,
+                "malicious_count": malicious,
+                "normal_count": benign
             }
             self.pcap_instance.save()
 
-            return analysis_obj
+            return analysis_result
 
         except Exception as e:
-            print(f"❌ Error during analysis: {e}")
+            print(f"❌ [Engine] Error: {str(e)}")
             traceback.print_exc()
             self.pcap_instance.status = 'failed'
             self.pcap_instance.save()
@@ -88,31 +100,12 @@ class AnalysisEngine:
             print(f"❌ Failed to load preprocessed CSV: {e}")
             return pd.DataFrame()
 
-    def _extract_summary(self, results):
+    def _extract_malicious_ips(self, df, predictions):
         try:
-            ensemble_preds = results.get("ensemble", {}).get("predictions", [])
-            total = len(ensemble_preds)
-            malicious = sum(ensemble_preds)
-            benign = total - malicious
-            return f"Total: {total}, Malicious: {malicious}, Benign: {benign}"
+            if "ip.src" in df.columns:
+                df["prediction"] = predictions
+                malicious_ips = df[df["prediction"] == 1]["ip.src"].value_counts().index.tolist()
+                return malicious_ips[:10]  # Top 10 most frequent malicious IPs
         except Exception as e:
-            return "Summary generation failed"
-
-    def _generate_summary_dict(self, results):
-        try:
-            ensemble_preds = results.get("ensemble", {}).get("predictions", [])
-            total = len(ensemble_preds)
-            malicious = sum(ensemble_preds)
-            benign = total - malicious
-            return {
-                "total_packets": total,
-                "malicious_count": malicious,
-                "normal_count": benign
-            }
-        except Exception as e:
-            print("❌ Failed to generate summary dictionary.")
-            return {
-                "total_packets": 0,
-                "malicious_count": 0,
-                "normal_count": 0
-            }
+            print(f"⚠️ Failed to extract malicious IPs: {e}")
+        return []

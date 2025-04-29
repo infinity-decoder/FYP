@@ -1,3 +1,4 @@
+<!-- templates/IDS/analysis_report.html -->
 {% extends 'IDS/base.html' %}
 {% load static %}
 
@@ -7,53 +8,49 @@
 <div class="container mt-5">
     <div class="text-center mb-4">
         <h2><i class="fas fa-clipboard-check"></i> Analysis Report</h2>
-        <p class="text-muted">Detailed results from the uploaded PCAP file</p>
+        <p class="text-muted">Detailed results for: {{ file.filename }}</p>
     </div>
 
-    <!-- Summary Section -->
-    <div class="card mb-4 shadow-sm">
+    <!-- Processing Status -->
+    {% if file.status != 'completed' %}
+    <div class="alert alert-warning text-center" role="alert">
+        <i class="fas fa-cog fa-spin me-2"></i> Your file is currently being analyzed... <br>
+        Please wait. This page will auto-update once results are ready.
+    </div>
+    {% endif %}
+
+    {% if report_data %}
+    <!-- Summary -->
+    <div class="card shadow-sm mb-4">
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Prediction Summary</h5>
+            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Prediction Summary</h5>
         </div>
         <div class="card-body">
-            {% if report_data %}
-            <p><strong>Total Records Analyzed:</strong> {{ report_data.total_records }}</p>
+            <p><strong>Total Packets:</strong> {{ report_data.total_packets }}</p>
             <p><strong>Normal Traffic:</strong> {{ report_data.normal_count }}</p>
-            <p><strong>Attack Traffic:</strong> {{ report_data.attack_count }}</p>
-            {% else %}
-            <p>No report data available.</p>
-            {% endif %}
+            <p><strong>Attack Traffic:</strong> {{ report_data.malicious_count }}</p>
         </div>
     </div>
 
-    <!-- Model Predictions -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0"><i class="fas fa-brain"></i> Model Insights</h5>
+    <!-- Per-model Breakdown -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-brain me-2"></i> Model Breakdown</h5>
         </div>
         <div class="card-body">
-            {% if report_data.models %}
-                <ul class="list-group">
-                    {% for model_name, result in report_data.models.items %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{ model_name }}</strong>
-                            <span>
-                                Normal: {{ result.normal }} |
-                                Attack: {{ result.attack }}
-                            </span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No model data available.</p>
-            {% endif %}
+            {% for model, stats in report_data.model_details.items %}
+                <div class="mb-3">
+                    <h6 class="text-dark"><i class="fas fa-robot me-1"></i> {{ model|title }}</h6>
+                    <p class="mb-1">Normal: {{ stats.normal }} | Attack: {{ stats.attack }}</p>
+                </div>
+            {% endfor %}
         </div>
     </div>
 
     <!-- Malicious IPs -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card shadow-sm mb-4">
         <div class="card-header bg-danger text-white">
-            <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Malicious IPs Detected</h5>
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Malicious IPs Detected</h5>
         </div>
         <div class="card-body">
             {% if report_data.malicious_ips %}
@@ -63,19 +60,20 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>No malicious IPs detected or data unavailable.</p>
+                <p class="text-muted">No malicious IPs detected.</p>
             {% endif %}
         </div>
     </div>
 
-    <!-- PDF Download -->
-    <div class="text-center mb-5">
-        <a href="{% url 'download_report_pdf' report_data.file_id %}" class="btn btn-outline-dark">
-            <i class="fas fa-file-download"></i> Download Report as PDF
+    <!-- PDF Export -->
+    <div class="text-center my-4">
+        <a href="{% url 'download_report_pdf' file.id %}" class="btn btn-outline-dark">
+            <i class="fas fa-file-download me-1"></i> Download Report as PDF
         </a>
     </div>
+    {% endif %}
 
-    <div class="text-center">
+    <div class="text-center mt-3">
         <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>

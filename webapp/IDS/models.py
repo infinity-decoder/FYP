@@ -1,3 +1,5 @@
+# webapp/IDS/models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -28,7 +30,7 @@ class AnalysisResult(models.Model):
     malicious_count = models.IntegerField()
     normal_count = models.IntegerField()
     malicious_ips = models.JSONField(default=list, blank=True)
-    model_details = models.JSONField(default=dict, blank=True)  # e.g., {model_name: metrics}
+    model_details = models.JSONField(default=dict, blank=True)  # e.g., {'xgboost': {...}, 'tabnet': {...}}
     generated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

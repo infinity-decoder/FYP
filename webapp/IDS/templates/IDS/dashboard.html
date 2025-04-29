@@ -1,88 +1,85 @@
 {% extends 'IDS/base.html' %}
+{% load static %}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <div class="content-header">
-        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
-    </div>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
 
-    <div class="content-body">
-        <!-- Upload Card -->
-        <div class="card upload-card">
-            <div class="card-header">
-                <h5><i class="fas fa-cloud-upload-alt"></i> Quick Upload & Analyze</h5>
+            <div class="text-center mb-4">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                <p class="text-muted">Upload, track, and review your PCAP analysis</p>
             </div>
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data" class="upload-form">
-                    {% csrf_token %}
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="file" name="file" class="file-upload" accept=".pcap,.pcapng" required>
-                        <label for="file" class="file-upload-label">
-                            <i class="fas fa-file-archive"></i>
-                            <span>Choose PCAP file</span>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary upload-btn">
-                        <i class="fas fa-rocket"></i> Analyze Now
-                    </button>
-                </form>
 
-                {% if upload_in_progress %}
-                <div class="progress mt-3">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%">
-                        Analysis in Progress...
-                    </div>
+            <!-- Upload Box -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-cloud-upload-alt me-1"></i> Upload & Analyze</h5>
                 </div>
-                {% endif %}
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="mb-3">
+                        {% csrf_token %}
+                        <input type="file" name="file" accept=".pcap,.pcapng" class="form-control mb-2" required>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-rocket me-1"></i> Analyze Now
+                        </button>
+                    </form>
 
-                {% if analysis_completed %}
-                <div class="alert alert-success mt-3">
-                    Analysis completed successfully!
-                    <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-primary ms-2">View Report</a>
+                    {% if upload_in_progress %}
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:100%">
+                            <i class="fas fa-spinner fa-spin me-1"></i> Analysis in Progress...
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if analysis_completed %}
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-1"></i> Analysis completed!
+                        <a href="{% url 'analysis_report' latest_file.id %}" class="btn btn-sm btn-outline-dark ms-2">
+                            View Report
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
-        </div>
 
-        <!-- Recent Activity -->
-        <div class="card activity-card mt-4">
-            <div class="card-header">
-                <h5><i class="fas fa-history"></i> Recent Analysis</h5>
-            </div>
-            <div class="card-body">
-                {% if user_files %}
-                <div class="analysis-table">
+            <!-- Recent Activity -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="fas fa-history me-1"></i> Recent Analyses</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_files %}
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-bordered table-hover align-middle">
                             <thead>
                                 <tr>
-                                    <th>Filename</th>
+                                    <th>File</th>
                                     <th>Date</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Report</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for file in user_files|slice:":5" %}
                                 <tr>
+                                    <td><i class="fas fa-file-alt me-1 text-primary"></i> {{ file.filename }}</td>
+                                    <td>{{ file.uploaded_at|date:"M d, Y H:i" }}</td>
                                     <td>
-                                        <i class="fas fa-file-code"></i>
-                                        {{ file.file.name|slice:"7:25" }}...
-                                    </td>
-                                    <td>{{ file.uploaded_at|date:"M d, Y" }}</td>
-                                    <td>
-                                        <span class="badge {% if file.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                        <span class="badge {% if file.status == 'completed' %}bg-success{% elif file.status == 'processing' %}bg-warning{% else %}bg-secondary{% endif %}">
                                             {{ file.get_status_display }}
                                         </span>
                                     </td>
                                     <td>
                                         {% if file.status == 'completed' %}
                                         <a href="{% url 'analysis_report' file.id %}" class="btn btn-sm btn-outline-primary">
-                                            View Report
+                                            View
                                         </a>
                                         {% else %}
-                                        <span class="text-muted">Processing...</span>
+                                        <span class="text-muted">Pending</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -90,14 +87,12 @@
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <p class="text-muted text-center">No uploads found yet.</p>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="no-activity text-center">
-                    <i class="fas fa-folder-open fa-2x text-muted"></i>
-                    <p>No analysis performed yet</p>
-                </div>
-                {% endif %}
             </div>
+
         </div>
     </div>
 </div>

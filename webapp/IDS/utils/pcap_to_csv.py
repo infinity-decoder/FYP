@@ -1,16 +1,26 @@
+# webapp/IDS/utils/pcap_to_csv.py
+
 import subprocess
-import pandas as pd
 import os
 from pathlib import Path
-from django.conf import settings
 
 class PcapConverter:
     @staticmethod
     def convert(pcap_path, output_dir):
-        """Convert PCAP to CSV using tshark"""
+        """
+        Convert a .pcap or .pcapng file to CSV using tshark.
+        Args:
+            pcap_path (str): Full path to input pcap file.
+            output_dir (str): Directory to save the output CSV.
+        Returns:
+            str: Path to generated CSV file.
+        """
         try:
-            output_path = os.path.join(output_dir, f"{Path(pcap_path).stem}.csv")
-            
+            # Windows 11-compatible path handling
+            os.makedirs(output_dir, exist_ok=True)
+            filename = Path(pcap_path).stem
+            output_csv = os.path.join(output_dir, f"{filename}.csv")
+
             tshark_command = [
                 "tshark",
                 "-r", pcap_path,
@@ -26,15 +36,18 @@ class PcapConverter:
                 "-e", "frame.time_delta_displayed",
                 "-e", "wlan_radio.signal_db",
                 "-E", "header=y",
-                "-E", "separator=,"
+                "-E", "separator=,",  # CSV format
             ]
-            
-            # Run conversion
-            with open(output_path, 'w') as f:
-                subprocess.run(tshark_command, stdout=f, check=True)
-                
-            return output_path
-            
+
+            with open(output_csv, 'w', encoding='utf-8') as f:
+                subprocess.run(tshark_command, stdout=f, stderr=subprocess.PIPE, check=True)
+
+            print(f"✅ PCAP converted to CSV: {output_csv}")
+            return output_csv
+
+        except subprocess.CalledProcessError as e:
+            print(f"❌ tshark error: {e.stderr.decode(errors='ignore')}")
+            raise
         except Exception as e:
-            print(f"❌ PCAP conversion error: {str(e)}")
+            print(f"❌ PCAP conversion failed: {str(e)}")
             raise

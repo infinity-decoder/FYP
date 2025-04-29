@@ -35,6 +35,7 @@ D:\FYP
 │       ├── catboost_intrusion_detection.pkl
 │       ├── evaluation_results.csv
 │       ├── lightgbm_intrusion_detection.pkl
+│       ├── lightgbm_native_model.txt
 │       ├── meta_scaler.pkl
 │       ├── tabnet_meta_model.pkl
 │       └── xgboost_native_model.pkl
