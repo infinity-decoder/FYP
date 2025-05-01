@@ -95,42 +95,42 @@
 
 {% if file.status != 'completed' %}
 <script>
-// Auto-refresh and progress tracking
-document.addEventListener('DOMContentLoaded', function() {
-    const refreshInterval = 5000; // 5 seconds
-    const progressAlert = document.getElementById('progressAlert');
-    const progressMessage = document.getElementById('progressMessage');
-    const progressBar = document.getElementById('progressBar');
-    
-    function checkProgress() {
-        fetch(`{% url 'get_analysis_progress' file.id %}`)
-            .then(response => response.json())
-            .then(data => {
-                // Update progress display
-                progressMessage.textContent = data.progress_message;
-                progressBar.textContent = data.progress_stage.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                
-                // Update status if completed
-                if (data.status === 'completed') {
-                    window.location.reload();
-                } else if (data.status === 'failed') {
-                    progressAlert.className = 'alert alert-danger text-center';
-                    progressBar.className = 'progress-bar progress-bar-striped bg-danger';
-                    clearInterval(intervalId);
-                }
-            })
-            .catch(error => console.error('Error checking progress:', error));
-    }
-    
-    // Initial check and set interval
-    checkProgress();
-    const intervalId = setInterval(checkProgress, refreshInterval);
-    
-    // Clean up on page leave
-    window.addEventListener('beforeunload', function() {
-        clearInterval(intervalId);
+    // Auto-refresh and progress tracking
+    document.addEventListener('DOMContentLoaded', function() {
+        const refreshInterval = 5000; // 5 seconds
+        const progressAlert = document.getElementById('progressAlert');
+        const progressMessage = document.getElementById('progressMessage');
+        const progressBar = document.getElementById('progressBar');
+        
+        function checkProgress() {
+            fetch(`/api/progress/{{ file.id }}/`)  <!-- Updated URL pattern -->
+                .then(response => response.json())
+                .then(data => {
+                    // Update progress display
+                    progressMessage.textContent = data.progress_message;
+                    progressBar.textContent = data.progress_stage.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    // Update status if completed
+                    if (data.status === 'completed') {
+                        window.location.reload();
+                    } else if (data.status === 'failed') {
+                        progressAlert.className = 'alert alert-danger text-center';
+                        progressBar.className = 'progress-bar progress-bar-striped bg-danger';
+                        clearInterval(intervalId);
+                    }
+                })
+                .catch(error => console.error('Error checking progress:', error));
+        }
+        
+        // Initial check and set interval
+        checkProgress();
+        const intervalId = setInterval(checkProgress, refreshInterval);
+        
+        // Clean up on page leave
+        window.addEventListener('beforeunload', function() {
+            clearInterval(intervalId);
+        });
     });
-});
-</script>
-{% endif %}
-{% endblock %}
+    </script>
+    {% endif %}
+    {% endblock %}

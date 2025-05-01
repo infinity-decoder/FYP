@@ -187,6 +187,7 @@ def download_report_pdf(request, file_id):
 
 @login_required
 def get_analysis_progress(request, file_id):
+    """API endpoint to get current analysis progress"""
     file = get_object_or_404(PcapFile, id=file_id, user=request.user)
     return JsonResponse({
         'status': file.status,
