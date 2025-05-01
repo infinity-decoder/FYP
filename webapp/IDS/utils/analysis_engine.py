@@ -26,6 +26,15 @@ class AnalysisEngine:
         os.makedirs(self.dataset_dir, exist_ok=True)
         os.makedirs(self.results_dir, exist_ok=True)
 
+        # Initialize processing components with error handling
+        try:
+            self.converter = PcapConverter()
+            self.preprocessor = TrafficPreprocessor()
+            self.predictor = IntrusionDetectionPredictor()
+        except Exception as e:
+            print(f"❌ [Engine] Failed to initialize components: {str(e)}")
+            raise
+
     def run(self):
         try:
             print(f"📥 [Engine] Starting analysis for: {self.filename}")
