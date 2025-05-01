@@ -25,9 +25,10 @@ class TrafficPreprocessor:
     def load_scaler(self):
         """Load pre-trained scaler from correct path"""
         try:
+            # Correct path to scaler
             scaler_path = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media', 'trained_models', 'meta_scaler.pkl')
             self.scaler = joblib.load(scaler_path)
-            print("✅ Scaler loaded successfully.")
+            print(f"✅ Scaler loaded from: {scaler_path}")
         except Exception as e:
             print(f"❌ Scaler load failed: {str(e)}")
             raise

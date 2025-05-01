@@ -108,7 +108,7 @@ def file_upload(request):
             pcap_file.progress_message = 'File uploaded successfully'
             pcap_file.save()
 
-            # Ensure media directories exist
+            # Ensure correct media directories exist
             media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
             for dir_name in ['uploads', 'csvs', 'datasets', 'results']:
                 os.makedirs(os.path.join(media_root, dir_name), exist_ok=True)
@@ -124,6 +124,7 @@ def file_upload(request):
     else:
         form = PcapUploadForm()
     return render(request, 'IDS/file_upload.html', {'form': form})
+
 
 
 @login_required

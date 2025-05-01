@@ -81,11 +81,7 @@ D:\FYP
     │   ├── forms.py
     │   ├── media
     │   │   ├── csvs
-    │   │   │   ├── attack_traffic_01.csv
-    │   │   │   ├── attack_traffic_01_DRHer07.csv
-    │   │   │   └── attack_traffic_01_Z11KbeB.csv
     │   │   ├── datasets
-    │   │   │   └── attack_traffic_01_Z11KbeB_processed.csv
     │   │   ├── results
     │   │   ├── trained_models
     │   │   │   ├── catboost_intrusion_detection.pkl
@@ -152,16 +148,4 @@ D:\FYP
     │   ├── urls.py
     │   └── wsgi.py
     ├── db.sqlite3
-    ├── manage.py
-    ├── media
-    │   └── uploads
-    │       ├── attack_traffic_01.pcapng
-    │       ├── attack_traffic_01_RNXA2VP.pcapng
-    │       └── attack_traffic_01_SqS2PrZ.pcapng
-    └── webapp
-        └── IDS
-            └── media
-                ├── csvs
-                ├── datasets
-                ├── results
-                └── uploads
+    └── manage.py

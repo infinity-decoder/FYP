@@ -17,6 +17,7 @@ class IntrusionDetectionPredictor:
 
     def load_models(self):
         """Load base models, meta-model, and scaler from correct path."""
+        # Correct model directory path
         model_dir = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media', 'trained_models')
         
         # List of models to try loading

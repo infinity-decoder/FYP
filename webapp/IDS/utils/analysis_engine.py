@@ -15,8 +15,11 @@ class AnalysisEngine:
         self.pcap_instance = pcap_file_instance
         self.pcap_path = pcap_file_instance.file.path
         self.filename = os.path.basename(self.pcap_path).replace('.pcap', '').replace('.pcapng', '')
+        
+        # Correct media root path
         self.media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
-
+        
+        # Correct subdirectories
         self.csv_dir = os.path.join(self.media_root, 'csvs')
         self.dataset_dir = os.path.join(self.media_root, 'datasets')
         self.results_dir = os.path.join(self.media_root, 'results')
