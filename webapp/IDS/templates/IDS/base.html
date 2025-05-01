@@ -1,3 +1,4 @@
+<!-- templates/IDS/base.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +79,13 @@
                         <a href="{% url 'analysis_report' file.id %}" class="report-item {% if file.id == current_file.id %}active{% endif %}">
                             <i class="fas fa-file-code"></i>
                             <span class="filename">{{ file.filename|truncatechars:20 }}</span>
-                            <span class="status-badge {{ file.status }}">{{ file.get_status_display }}</span>
+                            <span class="status-badge {{ file.status }}">
+                                {% if file.progress_stage == 'failed' %}
+                                    Failed
+                                {% else %}
+                                    {{ file.get_status_display }}
+                                {% endif %}
+                            </span>
                         </a>
                         {% endfor %}
                     {% else %}

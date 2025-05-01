@@ -17,14 +17,25 @@ class PcapFile(models.Model):
         ('preprocessing', 'Preprocessing Data'),
         ('predicting', 'Running Predictions'),
         ('saving', 'Saving Results'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='uploaded')
-    progress_stage = models.CharField(max_length=20, choices=PROGRESS_STAGES, default='uploaded')
-    progress_message = models.CharField(max_length=200, blank=True, null=True)
+    progress_stage = models.CharField(
+        max_length=20, 
+        choices=PROGRESS_STAGES, 
+        default='uploaded'
+    )
+    progress_message = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        default='File uploaded successfully'
+    )
     analysis_result = models.JSONField(null=True, blank=True)
 
     def __str__(self):

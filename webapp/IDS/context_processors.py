@@ -1,4 +1,5 @@
-# just a simple context processor to add user files to the context , as i do not want to pass it from every view
+# webapp/IDS/context_processors.py
+
 from .models import PcapFile
 
 def user_files(request):
@@ -12,6 +13,9 @@ def user_files(request):
         return {
             'user_files': PcapFile.objects.filter(
                 user=request.user
-            ).order_by('-uploaded_at')[:10]  # Only show 10 most recent files
+            ).order_by('-uploaded_at').only(
+                'id', 'file', 'uploaded_at', 'status', 
+                'progress_stage', 'progress_message'
+            )[:10]  # Only show 10 most recent files
         }
     return {}  # Return empty dict for non-authenticated users
