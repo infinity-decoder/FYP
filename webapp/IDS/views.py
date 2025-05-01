@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import os
 
 from xhtml2pdf import pisa
 from .models import PcapFile, AnalysisResult
@@ -59,8 +61,33 @@ def user_logout(request):
 
 @login_required
 def dashboard(request):
+    if request.method == 'POST' and 'file' in request.FILES:
+        form = PcapUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            pcap_file = form.save(commit=False)
+            pcap_file.user = request.user
+            pcap_file.status = 'uploaded'
+            pcap_file.progress_stage = 'uploaded'
+            pcap_file.progress_message = 'File uploaded successfully'
+            pcap_file.save()
+
+            # Ensure media directories exist
+            media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
+            for dir_name in ['uploads', 'csvs', 'datasets', 'results']:
+                os.makedirs(os.path.join(media_root, dir_name), exist_ok=True)
+
+            # Trigger background analyzer
+            analyzer = BackgroundAnalyzer(pcap_file.id)
+            analyzer.start()
+
+            messages.success(request, 'File uploaded successfully! Analysis started.')
+            return redirect('analysis_report', file_id=pcap_file.id)
+        else:
+            messages.error(request, 'Invalid file format.')
+
     user_files = PcapFile.objects.filter(user=request.user).order_by('-uploaded_at')
     latest_file = user_files.first()
+    
     return render(request, 'IDS/dashboard.html', {
         'user_files': user_files,
         'latest_file': latest_file,
@@ -77,7 +104,14 @@ def file_upload(request):
             pcap_file = form.save(commit=False)
             pcap_file.user = request.user
             pcap_file.status = 'uploaded'
+            pcap_file.progress_stage = 'uploaded'
+            pcap_file.progress_message = 'File uploaded successfully'
             pcap_file.save()
+
+            # Ensure media directories exist
+            media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
+            for dir_name in ['uploads', 'csvs', 'datasets', 'results']:
+                os.makedirs(os.path.join(media_root, dir_name), exist_ok=True)
 
             # Trigger background analyzer
             analyzer = BackgroundAnalyzer(pcap_file.id)
@@ -98,6 +132,8 @@ def analyze_pcap(request, file_id):
 
     if file.status not in ['processing', 'completed']:
         file.status = 'processing'
+        file.progress_stage = 'converting'
+        file.progress_message = 'Starting analysis...'
         file.save()
 
         analyzer = BackgroundAnalyzer(file.id)
@@ -123,6 +159,8 @@ def analysis_report(request, file_id):
     return render(request, 'IDS/analysis_report.html', {
         'file': file,
         'report_data': detailed_report,
+        'progress_stage': file.progress_stage,
+        'progress_message': file.progress_message
     })
 
 
@@ -145,3 +183,13 @@ def download_report_pdf(request, file_id):
         return HttpResponse("PDF generation error", status=500)
 
     return response
+
+
+@login_required
+def get_analysis_progress(request, file_id):
+    file = get_object_or_404(PcapFile, id=file_id, user=request.user)
+    return JsonResponse({
+        'status': file.status,
+        'progress_stage': file.progress_stage,
+        'progress_message': file.progress_message
+    })

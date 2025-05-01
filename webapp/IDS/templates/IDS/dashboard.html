@@ -1,3 +1,4 @@
+<!-- templates/IDS/dashboard.html -->
 {% extends 'IDS/base.html' %}
 {% load static %}
 
@@ -19,18 +20,24 @@
                     <h5><i class="fas fa-cloud-upload-alt me-1"></i> Upload & Analyze</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data" class="mb-3">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm" class="mb-3">
                         {% csrf_token %}
-                        <input type="file" name="file" accept=".pcap,.pcapng" class="form-control mb-2" required>
-                        <button type="submit" class="btn btn-success w-100">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Select PCAP/PCAPNG File</label>
+                            <input type="file" name="file" id="fileInput" 
+                                   class="form-control" accept=".pcap,.pcapng" required>
+                            <div class="invalid-feedback">Please select a valid PCAP file</div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100" id="analyzeBtn">
                             <i class="fas fa-rocket me-1"></i> Analyze Now
                         </button>
                     </form>
 
                     {% if upload_in_progress %}
-                    <div class="progress">
+                    <div class="progress mb-3" id="uploadProgress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:100%">
-                            <i class="fas fa-spinner fa-spin me-1"></i> Analysis in Progress...
+                            <i class="fas fa-spinner fa-spin me-1"></i> 
+                            <span id="uploadStatus">Analysis in Progress...</span>
                         </div>
                     </div>
                     {% endif %}
@@ -69,15 +76,24 @@
                                     <td><i class="fas fa-file-alt me-1 text-primary"></i> {{ file.filename }}</td>
                                     <td>{{ file.uploaded_at|date:"M d, Y H:i" }}</td>
                                     <td>
-                                        <span class="badge {% if file.status == 'completed' %}bg-success{% elif file.status == 'processing' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        <span class="badge 
+                                            {% if file.status == 'completed' %}bg-success
+                                            {% elif file.status == 'processing' %}bg-warning
+                                            {% elif file.status == 'failed' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
                                             {{ file.get_status_display }}
                                         </span>
+                                        {% if file.status == 'processing' %}
+                                        <small class="text-muted d-block">{{ file.progress_message }}</small>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if file.status == 'completed' %}
                                         <a href="{% url 'analysis_report' file.id %}" class="btn btn-sm btn-outline-primary">
                                             View
                                         </a>
+                                        {% elif file.status == 'failed' %}
+                                        <span class="text-danger">Failed</span>
                                         {% else %}
                                         <span class="text-muted">Pending</span>
                                         {% endif %}
@@ -96,4 +112,43 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    // Form validation
+    uploadForm.addEventListener('submit', function(e) {
+        if (!fileInput.files.length) {
+            e.preventDefault();
+            fileInput.classList.add('is-invalid');
+        } else {
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Processing...';
+            
+            // Show progress bar if not already shown
+            if (!document.getElementById('uploadProgress')) {
+                const progressDiv = document.createElement('div');
+                progressDiv.className = 'progress mb-3';
+                progressDiv.id = 'uploadProgress';
+                progressDiv.innerHTML = `
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:100%">
+                        <i class="fas fa-spinner fa-spin me-1"></i> 
+                        <span id="uploadStatus">Starting analysis...</span>
+                    </div>`;
+                uploadForm.after(progressDiv);
+            }
+        }
+    });
+    
+    // File input validation
+    fileInput.addEventListener('change', function() {
+        if (fileInput.files.length) {
+            fileInput.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -15,7 +15,7 @@ class AnalysisEngine:
         self.pcap_instance = pcap_file_instance
         self.pcap_path = pcap_file_instance.file.path
         self.filename = os.path.basename(self.pcap_path).replace('.pcap', '').replace('.pcapng', '')
-        self.media_root = settings.MEDIA_ROOT
+        self.media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
 
         self.csv_dir = os.path.join(self.media_root, 'csvs')
         self.dataset_dir = os.path.join(self.media_root, 'datasets')
@@ -26,18 +26,15 @@ class AnalysisEngine:
         os.makedirs(self.dataset_dir, exist_ok=True)
         os.makedirs(self.results_dir, exist_ok=True)
 
-        # Init processing classes
-        self.converter = PcapConverter()
-        self.preprocessor = TrafficPreprocessor()
-        self.predictor = IntrusionDetectionPredictor()
-
     def run(self):
         try:
             print(f"📥 [Engine] Starting analysis for: {self.filename}")
+            self.pcap_instance.update_progress('converting', 'Converting PCAP to CSV...')
 
             # Step 1: Convert PCAP ➝ CSV
             print("🔄 Converting PCAP to CSV...")
             csv_path = self.converter.convert(self.pcap_path, self.csv_dir)
+            self.pcap_instance.update_progress('preprocessing', 'Preprocessing CSV data...')
 
             # Step 2: Preprocess ➝ Dataset
             print("🧹 Preprocessing CSV data...")
@@ -49,6 +46,7 @@ class AnalysisEngine:
 
             # Step 3: Predict
             print("🤖 Running model predictions...")
+            self.pcap_instance.update_progress('predicting', 'Running model predictions...')
             results = self.predictor.predict(df)
 
             # Step 4: Save predictions to JSON
@@ -57,6 +55,7 @@ class AnalysisEngine:
                 json.dump(results, f, indent=4)
 
             print(f"✅ Prediction completed. Results saved to: {json_path}")
+            self.pcap_instance.update_progress('saving', 'Saving results to database...')
 
             # Step 5: Extract summary
             ensemble_preds = results.get("ensemble", {}).get("predictions", [])
@@ -76,6 +75,8 @@ class AnalysisEngine:
             )
 
             self.pcap_instance.status = 'completed'
+            self.pcap_instance.progress_stage = 'completed'
+            self.pcap_instance.progress_message = 'Analysis completed successfully'
             self.pcap_instance.analysis_result = {
                 "status": "completed",
                 "total_packets": total,
@@ -90,6 +91,8 @@ class AnalysisEngine:
             print(f"❌ [Engine] Error: {str(e)}")
             traceback.print_exc()
             self.pcap_instance.status = 'failed'
+            self.pcap_instance.progress_stage = 'failed'
+            self.pcap_instance.progress_message = f'Analysis failed: {str(e)}'
             self.pcap_instance.save()
             return None
 

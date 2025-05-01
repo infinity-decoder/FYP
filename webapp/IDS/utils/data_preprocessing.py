@@ -6,6 +6,7 @@ import numpy as np
 import joblib
 from django.conf import settings
 from sklearn.exceptions import NotFittedError
+import warnings
 
 class TrafficPreprocessor:
     def __init__(self):
@@ -19,13 +20,14 @@ class TrafficPreprocessor:
         ]
         self.scaler = None
         self.load_scaler()
+        warnings.filterwarnings('ignore', category=FutureWarning)
 
     def load_scaler(self):
-        """Load pre-trained scaler for consistent feature scaling"""
+        """Load pre-trained scaler from correct path"""
         try:
-            scaler_path = os.path.join(settings.MEDIA_ROOT, 'trained_models', 'meta_scaler.pkl')
+            scaler_path = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media', 'trained_models', 'meta_scaler.pkl')
             self.scaler = joblib.load(scaler_path)
-            print("✅ Scaler loaded from meta_scaler.pkl")
+            print("✅ Scaler loaded successfully.")
         except Exception as e:
             print(f"❌ Scaler load failed: {str(e)}")
             raise
@@ -40,43 +42,51 @@ class TrafficPreprocessor:
             str: Full path to processed CSV
         """
         try:
+            # Load CSV with error handling
             df = pd.read_csv(input_csv_path)
-
+            
             if df.empty:
                 raise ValueError("Loaded CSV is empty.")
 
-            # Drop empty columns or those with too many missing values
+            # Clean data - drop empty columns and rows with threshold
             df = df.dropna(axis=1, how='all')
             df = df.dropna(thresh=int(0.5 * len(df)), axis=1)
-
-            # Fill missing values
-            for col in df.columns:
-                if df[col].dtype in ['float64', 'int64']:
-                    df[col].fillna(df[col].median(), inplace=True)
-                else:
-                    df[col].fillna(df[col].mode()[0] if not df[col].mode().empty else "unknown", inplace=True)
-
-            # Filter required features
-            features_available = [f for f in self.required_features if f in df.columns]
-            missing_features = list(set(self.required_features) - set(features_available))
-
-            if missing_features:
-                print(f"⚠️ Missing features: {missing_features}")
-
-            df = df[features_available]
-
+            
+            # Ensure we have at least some data left
             if df.empty:
-                raise ValueError("Preprocessed DataFrame is empty after feature selection.")
+                raise ValueError("No data remaining after initial cleaning.")
+
+            # Handle missing values without chained assignment
+            numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+            for col in numeric_cols:
+                df[col] = df[col].fillna(df[col].median())
+                
+            for col in df.select_dtypes(exclude=['float64', 'int64']).columns:
+                mode_values = df[col].mode()
+                df[col] = df[col].fillna(mode_values[0] if not mode_values.empty else "unknown")
+
+            # Align features with what scaler expects
+            available_features = [f for f in self.scaler.feature_names_in_ if f in df.columns]
+            missing_features = list(set(self.scaler.feature_names_in_) - set(available_features))
+            
+            if missing_features:
+                print(f"⚠️ Adding missing features: {missing_features}")
+                for feature in missing_features:
+                    df[feature] = 0  # Add with default value
+                    
+            # Select only the features the scaler expects
+            df = df[self.scaler.feature_names_in_]
 
             # Scale data
-            try:
-                scaled = self.scaler.transform(df)
-            except NotFittedError:
-                raise ValueError("Scaler not fitted. Ensure meta_scaler.pkl is trained.")
-
+            scaled_data = self.scaler.transform(df)
+            
+            # Ensure output directory exists
+            os.makedirs(output_dir, exist_ok=True)
             output_path = os.path.join(output_dir, os.path.basename(input_csv_path).replace('.csv', '_processed.csv'))
-            pd.DataFrame(scaled, columns=features_available).to_csv(output_path, index=False)
-
+            
+            # Save processed data
+            pd.DataFrame(scaled_data, columns=self.scaler.feature_names_in_).to_csv(output_path, index=False)
+            
             print(f"✅ Preprocessed data saved to: {output_path}")
             return output_path
 
