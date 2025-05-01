@@ -9,11 +9,6 @@ class PcapConverter:
     def convert(pcap_path, output_dir):
         """
         Convert a .pcap or .pcapng file to CSV using tshark.
-        Args:
-            pcap_path (str): Full path to input pcap file.
-            output_dir (str): Directory to save the output CSV.
-        Returns:
-            str: Path to generated CSV file.
         """
         try:
             # Windows 11-compatible path handling

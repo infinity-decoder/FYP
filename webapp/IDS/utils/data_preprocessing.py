@@ -26,7 +26,7 @@ class TrafficPreprocessor:
         """Load pre-trained scaler from correct path"""
         try:
             # Correct path to scaler
-            scaler_path = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media', 'trained_models', 'meta_scaler.pkl')
+            scaler_path = os.path.join(settings.BASE_DIR, 'IDS', 'media', 'trained_models', 'meta_scaler.pkl')
             self.scaler = joblib.load(scaler_path)
             print(f"✅ Scaler loaded from: {scaler_path}")
         except Exception as e:
@@ -36,11 +36,7 @@ class TrafficPreprocessor:
     def preprocess(self, input_csv_path, output_dir):
         """
         Clean, transform, and scale the CSV file.
-        Args:
-            input_csv_path (str): Raw tshark CSV file
-            output_dir (str): Directory to save processed output
-        Returns:
-            str: Full path to processed CSV
+        
         """
         try:
             # Load CSV with error handling

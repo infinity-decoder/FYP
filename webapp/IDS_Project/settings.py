@@ -75,7 +75,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'IDS/static']
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'webapp' / 'IDS' / 'media'
+MEDIA_ROOT = BASE_DIR / 'IDS' / 'media'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'

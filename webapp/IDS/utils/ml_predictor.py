@@ -18,7 +18,7 @@ class IntrusionDetectionPredictor:
     def load_models(self):
         """Load base models, meta-model, and scaler from correct path."""
         # Correct model directory path
-        model_dir = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media', 'trained_models')
+        model_dir = os.path.join(settings.BASE_DIR, 'IDS', 'media', 'trained_models')
         
         # List of models to try loading
         model_files = {
@@ -56,10 +56,7 @@ class IntrusionDetectionPredictor:
     def predict(self, input_df):
         """
         Run predictions using available base models and meta-model.
-        Args:
-            input_df (DataFrame): preprocessed input data
-        Returns:
-            dict: structured predictions
+        
         """
         try:
             if not isinstance(input_df, pd.DataFrame):
