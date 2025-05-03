@@ -1,5 +1,3 @@
-# webapp/IDS/utils/analysis_engine.py
-
 import os
 import json
 import traceback
@@ -16,7 +14,7 @@ class AnalysisEngine:
         self.pcap_path = pcap_file_instance.file.path
         self.filename = os.path.basename(self.pcap_path).replace('.pcap', '').replace('.pcapng', '')
         
-        # Correct media root path
+        # Correct media root path - point directly to IDS/media
         self.media_root = os.path.join(settings.BASE_DIR, 'IDS', 'media')
         
         # Correct subdirectories

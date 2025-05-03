@@ -1,5 +1,3 @@
-# webapp/IDS/utils/data_preprocessing.py
-
 import os
 import pandas as pd
 import numpy as np
@@ -7,6 +5,7 @@ import joblib
 from django.conf import settings
 from sklearn.exceptions import NotFittedError
 import warnings
+from io import StringIO
 
 class TrafficPreprocessor:
     def __init__(self):
@@ -35,25 +34,38 @@ class TrafficPreprocessor:
 
     def preprocess(self, input_csv_path, output_dir):
         """
-        Clean, transform, and scale the CSV file.
-        
+        Clean, transform, and scale the CSV file with robust error handling
         """
         try:
-            # Load CSV with error handling
-            df = pd.read_csv(input_csv_path)
+            # First read the CSV with flexible parsing
+            with open(input_csv_path, 'r') as f:
+                content = f.read()
+            
+            # Clean lines with inconsistent field counts
+            lines = content.split('\n')
+            header = lines[0]
+            cleaned_lines = [header]
+            
+            for line in lines[1:]:
+                if line.count(',') == header.count(','):
+                    cleaned_lines.append(line)
+            
+            cleaned_content = '\n'.join(cleaned_lines)
+            
+            # Read into DataFrame with proper error handling
+            df = pd.read_csv(StringIO(cleaned_content), low_memory=False)
             
             if df.empty:
-                raise ValueError("Loaded CSV is empty.")
+                raise ValueError("Loaded CSV is empty after cleaning.")
 
             # Clean data - drop empty columns and rows with threshold
             df = df.dropna(axis=1, how='all')
             df = df.dropna(thresh=int(0.5 * len(df)), axis=1)
             
-            # Ensure we have at least some data left
             if df.empty:
                 raise ValueError("No data remaining after initial cleaning.")
 
-            # Handle missing values without chained assignment
+            # Handle missing values
             numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
             for col in numeric_cols:
                 df[col] = df[col].fillna(df[col].median())
