@@ -72,7 +72,7 @@ def dashboard(request):
             pcap_file.save()
 
             # Ensure media directories exist
-            media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
+            media_root = os.path.join(settings.BASE_DIR,'IDS', 'media')
             for dir_name in ['uploads', 'csvs', 'datasets', 'results']:
                 os.makedirs(os.path.join(media_root, dir_name), exist_ok=True)
 
@@ -109,7 +109,7 @@ def file_upload(request):
             pcap_file.save()
 
             # Ensure correct media directories exist
-            media_root = os.path.join(settings.BASE_DIR, 'webapp', 'IDS', 'media')
+            media_root = os.path.join(settings.BASE_DIR, 'IDS', 'media')
             for dir_name in ['uploads', 'csvs', 'datasets', 'results']:
                 os.makedirs(os.path.join(media_root, dir_name), exist_ok=True)
 

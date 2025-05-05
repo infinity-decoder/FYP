@@ -22,7 +22,6 @@ D:\FYP
 ├── image.png
 ├── logs
 │   └── app.log
-├── media
 ├── models
 │   ├── CatBoost.ipynb
 │   ├── LightGBM.ipynb
@@ -62,6 +61,7 @@ D:\FYP
 │   ├── pyshark_csv.py
 │   ├── schema.py
 │   ├── test_catboost.ipynb
+│   ├── test_preprocessing.ipynb
 │   └── tshark_csv.py
 └── webapp
     ├── IDS
@@ -81,6 +81,7 @@ D:\FYP
     │   ├── forms.py
     │   ├── media
     │   │   ├── csvs
+    │   │   │   └── attack_traffic_01.csv
     │   │   ├── datasets
     │   │   ├── results
     │   │   ├── trained_models
@@ -90,6 +91,7 @@ D:\FYP
     │   │   │   ├── tabnet_meta_model.pkl
     │   │   │   └── xgboost_native_model.pkl
     │   │   └── uploads
+    │   │       └── attack_traffic_01.pcapng
     │   ├── migrations
     │   │   ├── 0001_initial.py
     │   │   ├── 0002_pcapfile_analysis_result_pcapfile_status.py
@@ -121,7 +123,6 @@ D:\FYP
     │   │       ├── home.html
     │   │       ├── login.html
     │   │       └── register.html
-    │   ├── tests.py
     │   ├── urls.py
     │   ├── utils
     │   │   ├── __pycache__
@@ -149,4 +150,3 @@ D:\FYP
     │   └── wsgi.py
     ├── db.sqlite3
     └── manage.py
-
