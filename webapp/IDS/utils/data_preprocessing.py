@@ -11,20 +11,15 @@ logger = logging.getLogger(__name__)
 
 class TrafficPreprocessor:
     def __init__(self):
-        # These must match EXACTLY what was used during training
-        self.required_features = [
-            'frame.len',
-            'ip.ttl',
-            'tcp.srcport',
-            'tcp.dstport',
-            'frame.time_delta_displayed',
-            'wlan_radio.signal_db'
-        ]
-        
-        # Additional features needed for reporting
-        self.reporting_features = ['ip.src', 'ip.dst']
-        
-        # Load the scaler used during training
+        # Map converted fields to model expected features
+        self.feature_mapping = {
+            'frame_len': 'frame.len',
+            'ip_ttl': 'ip.ttl',
+            'tcp_srcport': 'tcp.srcport',
+            'tcp_dstport': 'tcp.dstport',
+            'time_delta': 'frame.time_delta_displayed',
+            'signal_db': 'wlan_radio.signal_db'
+        }
         self.scaler = self._load_scaler()
 
     def _load_scaler(self):
@@ -43,19 +38,21 @@ class TrafficPreprocessor:
             raise
 
     def preprocess(self, input_csv_path, output_dir):
-        """
-        Process data EXACTLY like during training
-        Returns path to processed CSV ready for prediction
-        """
         try:
-            # 1. Load raw CSV with consistent parsing
-            df = pd.read_csv(input_csv_path, sep='|')
+            #1. Load with consistent parsing
+            df = pd.read_csv(input_csv_path)
             
-            # 2. Clean and validate data
-            df = self._clean_and_validate(df)
+            #2. Rename columns to match training data
+            df = df.rename(columns={
+                csv_name: model_name 
+                for csv_name, model_name in self.feature_mapping.items()
+                if csv_name in df.columns
+            })
             
-            # 3. Ensure required features exist with correct names
-            df = self._ensure_features(df)
+            #3. Ensure all required features exist
+            for feature in self.feature_mapping.values():
+                if feature not in df.columns:
+                    df[feature] = 0.0
             
             # 4. Prepare features for base models
             X = df[self.required_features].values
