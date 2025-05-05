@@ -1,33 +1,81 @@
-import pandas as pd
-import joblib
+# FYP/webapp/IDS/utils/data_preprocessing.py
 import os
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import logging
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ENCODER_PATH = os.path.join(BASE_DIR, "models", "label_encoders.joblib")
-FEATURE_COLUMNS_PATH = os.path.join(BASE_DIR, "models", "feature_columns.joblib")
+logger = logging.getLogger(__name__)
 
-def preprocess_csv(file_path):
-    df = pd.read_csv(file_path)
+class TrafficPreprocessor:
+    def __init__(self):
+        # Original features used during training (must match exactly)
+        self.required_features = [
+            'frame.len',
+            'ip.ttl',
+            'tcp.srcport', 
+            'tcp.dstport',
+            'frame.time_delta_displayed',
+            'wlan_radio.signal_db'
+        ]
+        
+    def preprocess(self, input_csv_path, output_dir):
+        """
+        Cleans and prepares raw packet data EXACTLY like during training.
+        Returns path to processed CSV ready for prediction.
+        """
+        try:
+            # 1. Load raw CSV with consistent parsing
+            df = self._load_raw_csv(input_csv_path)
+            
+            # 2. Clean and validate data
+            df = self._clean_data(df)
+            
+            # 3. Ensure required features exist
+            df = self._ensure_features(df)
+            
+            # 4. Save processed data
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, f"{Path(input_csv_path).stem}_processed.csv")
+            df.to_csv(output_path, index=False)
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Preprocessing failed: {str(e)}")
+            raise
 
-    # Drop nulls and fill NA
-    df.dropna(inplace=True)
-    df.fillna(0, inplace=True)
+    def _load_raw_csv(self, path):
+        """Load CSV with consistent separator and handle parsing errors"""
+        try:
+            # Use same separator as tshark output
+            return pd.read_csv(path, sep='|', low_memory=False)
+        except Exception as e:
+            logger.error(f"Failed to load CSV: {str(e)}")
+            raise ValueError("Invalid PCAP CSV format")
 
-    # Load label encoders
-    encoders = joblib.load(ENCODER_PATH)
-    for col, le in encoders.items():
-        if col in df.columns:
-            df[col] = df[col].map(lambda s: '<unknown>' if s not in le.classes_ else s)
-            le.classes_ = list(le.classes_) + ['<unknown>'] if '<unknown>' not in le.classes_ else le.classes_
-            df[col] = le.transform(df[col])
+    def _clean_data(self, df):
+        """Perform exact same cleaning as training pipeline"""
+        # Drop fully empty columns/rows
+        df = df.dropna(axis=1, how='all')
+        df = df.dropna(axis=0, how='all')
+        
+        # Fill missing values consistently with training
+        num_cols = df.select_dtypes(include=np.number).columns
+        df[num_cols] = df[num_cols].fillna(0)
+        
+        # Convert all numeric columns to float32 (matches training)
+        for col in num_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce').astype('float32')
+            
+        return df
 
-    # Load expected feature columns
-    feature_columns = joblib.load(FEATURE_COLUMNS_PATH)
-
-    # Add missing columns
-    for col in feature_columns:
-        if col not in df.columns:
-            df[col] = 0
-
-    df = df[feature_columns]  # Ensure correct column order
-    return df
+    def _ensure_features(self, df):
+        """Guarantee the model gets features in expected format"""
+        # Add missing features with 0 values
+        for feature in self.required_features:
+            if feature not in df.columns:
+                df[feature] = 0.0
+                
+        # Select only the required features in correct order
+        return df[self.required_features]
