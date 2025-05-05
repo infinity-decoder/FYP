@@ -43,10 +43,7 @@ class IntrusionDetectionPredictor:
 
     def predict(self, input_df):
         """
-        Run ensemble prediction pipeline:
-        1. Get base model predictions (native APIs)
-        2. Generate meta-features
-        3. Apply TabNet meta-model
+        Run ensemble prediction pipeline with proper feature validation
         """
         try:
             # Convert DataFrame to numpy for native APIs
@@ -57,7 +54,7 @@ class IntrusionDetectionPredictor:
             meta_features = []
             
             # XGBoost prediction (native DMatrix format)
-            xgb_input = xgb.DMatrix(X)
+            xgb_input = xgb.DMatrix(X, feature_names=input_df.columns.tolist())
             xgb_preds = self.models['xgboost'].predict(xgb_input)
             base_results['xgboost'] = self._format_prediction(xgb_preds)
             meta_features.append(xgb_preds)
