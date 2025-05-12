@@ -1,16 +1,12 @@
-# FYP/webapp/IDS/utils/analysis_engine.py
 import os
 import json
 import traceback
 import pandas as pd
-import logging
 from django.conf import settings
 from .pcap_to_csv import PcapConverter
 from .data_preprocessing import TrafficPreprocessor
 from .ml_predictor import IntrusionDetectionPredictor
 from IDS.models import PcapFile, AnalysisResult
-
-logger = logging.getLogger(__name__)
 
 class AnalysisEngine:
     def __init__(self, pcap_file_instance):
@@ -37,44 +33,21 @@ class AnalysisEngine:
             self.preprocessor = TrafficPreprocessor()
             self.predictor = IntrusionDetectionPredictor()
         except Exception as e:
-            logger.error(f"[Engine] Failed to initialize components: {str(e)}")
-            raise
-
-    def _validate_pcap(self):
-        """Verify PCAP file can be processed"""
-        try:
-            # Quick check if file exists and is valid
-            if not os.path.exists(self.pcap_path):
-                raise ValueError("PCAP file does not exist")
-            
-            if os.path.getsize(self.pcap_path) == 0:
-                raise ValueError("PCAP file is empty")
-                
-            # Verify file magic number
-            with open(self.pcap_path, 'rb') as f:
-                magic = f.read(4)
-                if magic not in [b'\xa1\xb2\xc3\xd4', b'\xd4\xc3\xb2\xa1']:
-                    raise ValueError("Invalid PCAP file format")
-                    
-        except Exception as e:
-            logger.error(f"Invalid PCAP file: {str(e)}")
+            print(f"❌ [Engine] Failed to initialize components: {str(e)}")
             raise
 
     def run(self):
         try:
-            logger.info(f"Starting analysis for: {self.filename}")
+            print(f"📥 [Engine] Starting analysis for: {self.filename}")
             self.pcap_instance.update_progress('converting', 'Converting PCAP to CSV...')
 
-            # Validate PCAP before processing
-            self._validate_pcap()
-
             # Step 1: Convert PCAP ➝ CSV
-            logger.info("Converting PCAP to CSV...")
+            print("🔄 Converting PCAP to CSV...")
             csv_path = self.converter.convert(self.pcap_path, self.csv_dir)
             self.pcap_instance.update_progress('preprocessing', 'Preprocessing CSV data...')
 
             # Step 2: Preprocess ➝ Dataset
-            logger.info("Preprocessing CSV data...")
+            print("🧹 Preprocessing CSV data...")
             dataset_path = self.preprocessor.preprocess(csv_path, self.dataset_dir)
             df = self._load_csv(dataset_path)
 
@@ -82,7 +55,7 @@ class AnalysisEngine:
                 raise ValueError("Processed dataset is empty. Cannot proceed with prediction.")
 
             # Step 3: Predict
-            logger.info("Running model predictions...")
+            print("🤖 Running model predictions...")
             self.pcap_instance.update_progress('predicting', 'Running model predictions...')
             results = self.predictor.predict(df)
 
@@ -91,7 +64,7 @@ class AnalysisEngine:
             with open(json_path, 'w') as f:
                 json.dump(results, f, indent=4)
 
-            logger.info(f"Prediction completed. Results saved to: {json_path}")
+            print(f"✅ Prediction completed. Results saved to: {json_path}")
             self.pcap_instance.update_progress('saving', 'Saving results to database...')
 
             # Step 5: Extract summary
@@ -125,7 +98,7 @@ class AnalysisEngine:
             return analysis_result
 
         except Exception as e:
-            logger.error(f"[Engine] Error: {str(e)}")
+            print(f"❌ [Engine] Error: {str(e)}")
             traceback.print_exc()
             self.pcap_instance.status = 'failed'
             self.pcap_instance.progress_stage = 'failed'
@@ -137,7 +110,7 @@ class AnalysisEngine:
         try:
             return pd.read_csv(path)
         except Exception as e:
-            logger.error(f"Failed to load preprocessed CSV: {e}")
+            print(f"❌ Failed to load preprocessed CSV: {e}")
             return pd.DataFrame()
 
     def _extract_malicious_ips(self, df, predictions):
@@ -147,5 +120,5 @@ class AnalysisEngine:
                 malicious_ips = df[df["prediction"] == 1]["ip.src"].value_counts().index.tolist()
                 return malicious_ips[:10]  # Top 10 most frequent malicious IPs
         except Exception as e:
-            logger.error(f"Failed to extract malicious IPs: {e}")
+            print(f"⚠️ Failed to extract malicious IPs: {e}")
         return []

@@ -1,87 +1,47 @@
-# FYP/webapp/IDS/utils/ml_predictor.py
+# ✅ FINAL FIXED FILE: FYP/webapp/IDS/utils/ml_predictor.py
+
 import os
 import joblib
-import pandas as pd
 import numpy as np
-import xgboost as xgb
 from django.conf import settings
-import logging
-
-logger = logging.getLogger(__name__)
+import warnings
 
 class IntrusionDetectionPredictor:
     def __init__(self):
-        self.models = {}
-        self.scaler = None
         self.meta_model = None
-        self._load_models()
+        self.load_model()
+        warnings.filterwarnings('ignore', category=UserWarning)
 
-    def _load_models(self):
-        """Load all models using their native APIs"""
-        model_dir = os.path.join(settings.BASE_DIR, 'IDS', 'media', 'trained_models')
-        
+    def load_model(self):
+        """Load ONLY the final TabNet meta-model."""
         try:
-            # Load scaler first
-            self.scaler = joblib.load(os.path.join(model_dir, 'meta_scaler.pkl'))
-            
-            # Load XGBoost (native format)
-            xgb_model_path = os.path.join(model_dir, 'xgboost_native_model.pkl')
-            self.models['xgboost'] = joblib.load(xgb_model_path)
-            
-            # Load LightGBM (native format)
-            lgb_model_path = os.path.join(model_dir, 'lightgbm_intrusion_detection.pkl')
-            self.models['lightgbm'] = joblib.load(lgb_model_path)
-            
-            # Load TabNet meta model
-            self.meta_model = joblib.load(os.path.join(model_dir, 'tabnet_meta_model.pkl'))
-            
-            logger.info("Models loaded successfully")
-            
+            model_path = os.path.join(settings.BASE_DIR, 'IDS', 'media', 'trained_models', 'tabnet_meta_model.pkl')
+            self.meta_model = joblib.load(model_path)
+            print("✅ Loaded TabNet meta-model.")
         except Exception as e:
-            logger.error(f"Model loading failed: {str(e)}")
+            print(f"❌ Failed to load TabNet model: {str(e)}")
             raise
 
     def predict(self, input_df):
         """
-        Run ensemble prediction pipeline with proper feature validation
+        Predict directly using the TabNet model with meta-feature input.
+        The input is expected to be a 2D numpy array or a pandas DataFrame with two columns.
         """
         try:
-            # Convert DataFrame to numpy for native APIs
-            X = input_df.values
-            
-            # Get base model predictions
-            base_results = {}
-            meta_features = []
-            
-            # XGBoost prediction (native DMatrix format)
-            xgb_input = xgb.DMatrix(X, feature_names=input_df.columns.tolist())
-            xgb_preds = self.models['xgboost'].predict(xgb_input)
-            base_results['xgboost'] = self._format_prediction(xgb_preds)
-            meta_features.append(xgb_preds)
-            
-            # LightGBM prediction (native format)
-            lgb_preds = self.models['lightgbm'].predict(X)
-            base_results['lightgbm'] = self._format_prediction(lgb_preds)
-            meta_features.append(lgb_preds)
-            
-            # Prepare meta-features for TabNet
-            meta_input = np.vstack(meta_features).T
-            scaled_meta = self.scaler.transform(meta_input)
-            
-            # Final prediction with TabNet
-            final_preds = self.meta_model.predict(scaled_meta)
-            base_results['ensemble'] = self._format_prediction(final_preds)
-            
-            return base_results
-            
-        except Exception as e:
-            logger.error(f"Prediction failed: {str(e)}")
-            raise
+            if hasattr(input_df, 'values'):
+                input_df = input_df.values
+            elif not isinstance(input_df, np.ndarray):
+                raise ValueError("Input must be a NumPy array or pandas DataFrame")
 
-    def _format_prediction(self, preds):
-        """Convert raw predictions to consistent output format"""
-        return {
-            'predictions': preds.tolist(),
-            'normal': int((preds == 0).sum()),
-            'attack': int((preds == 1).sum())
-        }
+            preds = self.meta_model.predict(input_df)
+            return {
+                'ensemble': {
+                    'predictions': preds.astype(int).tolist(),
+                    'normal': int((preds == 0).sum()),
+                    'attack': int((preds == 1).sum())
+                }
+            }
+
+        except Exception as e:
+            print(f"❌ Prediction error: {str(e)}")
+            raise
