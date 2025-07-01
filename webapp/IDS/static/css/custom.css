@@ -314,9 +314,14 @@ footer.with-sidebar {
     }
 }
 
-/* Existing Auth Cards (Keep your original styles) */
+/* Existing Auth Cards  original styles */
 .about-card,
 .contact-card {
+     display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
     background: var(--glass-background);
     backdrop-filter: var(--blur-effect);
     border: 1px solid var(--glass-border);
