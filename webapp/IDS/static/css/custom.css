@@ -1,7 +1,7 @@
 /* Custom CSS */
 :root {
-    --primary-color: #ED9E59; /* Orange */
-    --secondary-color: #522C5D; /* Violet */
+    --primary-color: #ED9E59;
+    --secondary-color: #522C5D;
     --glass-background: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -22,7 +22,7 @@ body {
     min-height: 100vh;
 }
 
-/* Navigation Bar - Only shown when NOT authenticated */
+/* Navigation Bar */
 body:not(.has-sidebar) .navbar {
     background: var(--glass-background);
     backdrop-filter: var(--blur-effect);
@@ -39,7 +39,7 @@ body:not(.has-sidebar) .navbar {
     color: var(--primary-color) !important;
 }
 
-/* Auth Containers (Login, Register) */
+/* Auth Containers */
 .auth-container {
     display: flex;
     justify-content: center;
@@ -60,16 +60,39 @@ body:not(.has-sidebar) .navbar {
     text-align: center;
 }
 
-/* Main App Layout when authenticated */
+/* About/Contact Container Fix */
+.about-container,
+.contact-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* About/Contact Cards */
+.about-card,
+.contact-card {
+    background: var(--glass-background);
+    backdrop-filter: var(--blur-effect);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: var(--glass-shadow);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Layout Authenticated */
 body.has-sidebar {
     display: flex;
     flex-direction: column;
 }
 
-/* Persistent Sidebar */
 .app-sidebar {
     width: var(--sidebar-width);
-    background: rgba(44, 62, 80, 0.9); /* Semi-transparent dark blue */
+    background: rgba(44, 62, 80, 0.9);
     backdrop-filter: var(--blur-effect);
     color: white;
     position: fixed;
@@ -136,7 +159,7 @@ body.has-sidebar {
 }
 
 .nav-item.active {
-    background: rgba(237, 158, 89, 0.2); /* Using your primary color */
+    background: rgba(237, 158, 89, 0.2);
     border-left: 3px solid var(--primary-color);
 }
 
@@ -248,7 +271,6 @@ body.has-sidebar {
     background: rgba(255,255,255,0.1);
 }
 
-/* Main Content Area */
 .app-content {
     margin-left: 0;
     transition: all 0.3s;
@@ -260,15 +282,9 @@ body.has-sidebar {
 .app-content.with-sidebar {
     margin-left: var(--sidebar-width);
     width: calc(100% - var(--sidebar-width));
+    padding-top: 56px;
 }
 
-/* Dashboard Content */
-.dashboard-container {
-    flex: 1;
-    padding: 20px;
-}
-
-/* Footer */
 footer {
     background: var(--glass-background);
     backdrop-filter: var(--blur-effect);
@@ -288,17 +304,17 @@ footer.with-sidebar {
     .app-sidebar {
         transform: translateX(-100%);
     }
-    
+
     .app-sidebar.active {
         transform: translateX(0);
     }
-    
+
     .app-content.with-sidebar,
     footer.with-sidebar {
         margin-left: 0;
         width: 100%;
     }
-    
+
     .sidebar-toggle {
         display: block;
         position: fixed;
@@ -311,104 +327,5 @@ footer.with-sidebar {
         padding: 8px 12px;
         border-radius: 4px;
         cursor: pointer;
-    }
-}
-
-/* Existing Auth Cards  original styles */
-.about-card,
-.contact-card {
-     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    background: var(--glass-background);
-    backdrop-filter: var(--blur-effect);
-    border: 1px solid var(--glass-border);
-    border-radius: 15px;
-    box-shadow: var(--glass-shadow);
-    padding: 2rem;
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-}
-
-/* File Upload Styles (Maintain your existing styles) */
-.file-upload-wrapper {
-    margin-bottom: 20px;
-}
-
-.file-upload-label {
-    display: block;
-    padding: 40px;
-    border: 2px dashed var(--glass-border);
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: var(--glass-background);
-}
-
-.file-upload-label:hover {
-    border-color: var(--primary-color);
-    background: rgba(237, 158, 89, 0.05);
-}
-
-.upload-btn {
-    width: 100%;
-    padding: 10px;
-    background: var(--primary-color);
-    border: none;
-}
-
-.upload-btn:hover {
-    background: #e08a3a;
-}
-
-/* Sidebar Styles */
-.app-sidebar {
-    width: 280px;
-    background: rgba(44, 62, 80, 0.95);
-    backdrop-filter: blur(10px);
-    position: fixed;
-    top: 56px; /* Below navbar */
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    overflow-y: auto;
-    color: white;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    transform: translateX(0);
-    transition: transform 0.3s ease;
-}
-
-/* Main Content Adjustment */
-.app-content.with-sidebar {
-    margin-left: 280px;
-    padding-top: 56px; /* Account for navbar */
-}
-
-/* Footer Adjustment */
-footer.with-sidebar {
-    margin-left: 280px;
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-    .app-sidebar {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar-active .app-sidebar {
-        transform: translateX(0);
-    }
-    
-    .sidebar-active .app-content.with-sidebar,
-    .sidebar-active footer.with-sidebar {
-        margin-left: 0;
-    }
-    
-    .navbar-toggler.sidebar-toggler {
-        display: block;
     }
 }
