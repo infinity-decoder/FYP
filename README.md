@@ -17,7 +17,7 @@ Visit `/docs/project_documentation.md` For details.
 | **1️⃣ SRS** | ✅ **Completed** | (Submitied on  `08DEC2024`),(Stored at `/docs`). |
 | **2️⃣ Design Document** | ✅ **Completed** | (Submitied on  `03MAR2025`),(Stored at `/docs`). |
 | **3️⃣ Prototype Phase** | ✅ **Completed** | Submitied on  `18MAR2025`. |
-| **4️⃣ Final Deliverable** | ❌ **Incompleted** | Under Development. |
+| **4️⃣ Final Deliverable** | ✅ **Completed** | Submitied on  `9MAY2025`. |
 
 
 
@@ -37,19 +37,9 @@ Visit `/docs/project_documentation.md` For details.
 | **2️⃣ Data Preprocessing** | ✅ **Completed** | Data cleaning, encoding, and normalization (Handled in `notebooks/data_preparation.ipynb`) |
 | **3️⃣ Final Dataset Creation** | ✅ **Completed** | Structured dataset with normal/malicious labels stored at **`/FYP/data/datasets/final_dataset.csv`**. |
 | **4️⃣ Model Training (TabNet, CatBoost, LightGBM, Stacking Ensemble)** | ✅ **Continue** | Each model trained separately (Handled in `notebooks/TabNet.ipynb`, `CatBoost.ipynb`, `LightGBM.ipynb`, `Stacking_ensemble.ipynb`). |
-| **5️⃣ Model Evaluation (Metrics Calculation & Comparison)** | ❌ **Incompleted**  | Evaluation script implemented (Handled in `notebooks/evaluation_metrics.ipynb`). |
+| **5️⃣ Model Evaluation (Metrics Calculation & Comparison)** | ✅ **Completed**  | Evaluation script implemented (Handled in `notebooks/evaluation_metrics.ipynb`). |
 
 
-
-## **🟡 Under Development**
-1. **Getting more data using wireshark**
-2. **Training Models**  
-
-## **🔴 Not completed yet**
-1. **Connecting ML Trained models to webapp** to ensure user can interact with app. 
-2. **Fine-tune the models** for better performance?
-3. **Final Report**
-4. **Final Presentation**
 
 ## **📁 Folder Schema**
 
@@ -82,5 +72,3 @@ Visit `/docs/project_documentation.md` For details.
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-violet?style=for-the-badge&logo=About.me)](https://profile.infinitydecoder.com/)  
 [![Email](https://img.shields.io/badge/Email-Contact%20Me-black?style=for-the-badge&logo=gmail)](mailto:bc210427835mal@vu.edu.pk)  
 
-
-<br>inshallah will be finalized till 09MAY2025! 🚀
