@@ -13,6 +13,7 @@ FYP
 │       └── attack_traffic_01.pcapng
 ├── docs
 │   ├── DD_F24PROJECTA686A (BC210427835).pdf
+    ├── DD_F24PROJECTA686A (BC210427835).pdf
 │   ├── SRS_F24PROJECTA686A (BC210427835).pdf
 │   └── project_documentation.md
 ├── folder_structure.txt
