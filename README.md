@@ -1,4 +1,4 @@
-#### ***  [  Development v1.0 ]***
+#### **  [  Development v1.0 ]**
 # **Intrusion Detection System (IDS) Using Wireshark and Advanced Ensemble Learning Techniques**
 
 
@@ -36,17 +36,19 @@ Visit `/docs/project_documentation.md` For details.
 | **1️⃣ Capture Network Traffic & Convert to CSV** | ✅ **Completed** | Wireshark captures `.pcap` files, which are converted to `.csv` (Handled in `notebooks/pcap_to_csv.ipynb`), (`.pcap`stored at `data/raw`), (`csv` stored at `data/processed`)  |
 | **2️⃣ Data Preprocessing** | ✅ **Completed** | Data cleaning, encoding, and normalization (Handled in `notebooks/data_preparation.ipynb`) |
 | **3️⃣ Final Dataset Creation** | ✅ **Completed** | Structured dataset with normal/malicious labels stored at **`/FYP/data/datasets/final_dataset.csv`**. |
-| **4️⃣ Model Training (TabNet, CatBoost, LightGBM, Stacking Ensemble)** | ✅ **Continue** | Each model trained separately (Handled in `notebooks/TabNet.ipynb`, `CatBoost.ipynb`, `LightGBM.ipynb`, `Stacking_ensemble.ipynb`). |
+| **4️⃣ Model Training (TabNet, CatBoost, LightGBM, Stacking Ensemble)** | ✅ **Trained (v1.0)** | Each model trained separately (Handled in `notebooks/TabNet.ipynb`, `CatBoost.ipynb`, `LightGBM.ipynb`, `Stacking_ensemble.ipynb`). |
 | **5️⃣ Model Evaluation (Metrics Calculation & Comparison)** | ✅ **Completed**  | Evaluation script implemented (Handled in `notebooks/evaluation_metrics.ipynb`). |
 
 
 
 ## **📁 Folder Schema**
 
+[Project schema](folder_structure.txt)
+
 ![screenshot](image.png)
 
 
-[Project schema](folder_structure.txt)
+
 ### **. Common Git Commands for Future Use**
 | Command | Description |
 |---------|------------|
