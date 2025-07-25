@@ -1,12 +1,24 @@
-D:\FYP
+FYP
+├── README.md
+├── configs
+│   └── model_config.json
 ├── data
 │   ├── datasets
+│   │   ├── dataset_extract.csv
+│   │   ├── final_dataset_01.csv
+│   │   └── final_dataset_02.csv
 │   ├── processed
+│   │   ├── attack_traffic_01.csv
 │   └── raw
+│       └── attack_traffic_01.pcapng
 ├── docs
 │   ├── DD_F24PROJECTA686A (BC210427835).pdf
 │   ├── SRS_F24PROJECTA686A (BC210427835).pdf
 │   └── project_documentation.md
+├── folder_structure.txt
+├── image.png
+├── logs
+│   └── app.log
 ├── models
 │   ├── CatBoost.ipynb
 │   ├── LightGBM.ipynb
@@ -28,17 +40,69 @@ D:\FYP
 │   ├── evaluation_metrics.ipynb
 │   ├── exploratory_data_analysis.ipynb
 │   └── pcap_to_csv.ipynb
+├── requirements.txt
+├── src
+│   ├── __init__.py
+│   ├── data_processing.py
+│   ├── feature_extraction.py
+│   ├── model_inference.py
+│   ├── model_training.py
+│   ├── pcap_to_csv.py
+│   └── visualization.py
+├── temp
+│   ├── TabNet.ipynb
+│   ├── data_preparation.ipynb
+│   └── pcap_to_csv.py
+├── tests
+│   ├── XGBoostn.ipynb
+│   ├── data_preprocessing.ipynb
+│   ├── extract.py
+│   ├── flow_features.csv
+│   ├── folder_schema.ipynb
+│   ├── output.csv
+│   ├── pyshark_csv.py
+│   ├── schema.py
+│   ├── test_catboost.ipynb
+│   ├── test_preprocessing.ipynb
+│   └── tshark_csv.py
 └── webapp
     ├── IDS
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── context_processors.py
+    │   ├── forms.py
     │   ├── media
     │   │   ├── csvs
+    │   │   │   ├── attack_traffic_01.csv
     │   │   ├── datasets
+    │   │   │   └── attack_traffic_01_processed.csv
     │   │   ├── results
+    │   │   │   └── attack_traffic_01ng_results.json
     │   │   ├── trained_models
+    │   │   │   ├── catboost_intrusion_detection.pkl
+    │   │   │   ├── lightgbm_intrusion_detection.pkl
+    │   │   │   ├── meta_scaler.pkl
+    │   │   │   ├── tabnet_meta_model.pkl
+    │   │   │   └── xgboost_native_model.pkl
     │   │   └── uploads
+    │   │       ├── attack_traffic_01.pcapng
+    │   ├── migrations
     │   ├── models.py
     │   ├── static
+    │   │   ├── css
+    │   │   │   └── custom.css
+    │   │   └── favicon.png
     │   ├── templates
+    │   │   └── IDS
+    │   │       ├── about_us.html
+    │   │       ├── analysis_report.html
+    │   │       ├── base.html
+    │   │       ├── contact_us.html
+    │   │       ├── dashboard.html
+    │   │       ├── file_upload.html
+    │   │       ├── home.html
+    │   │       ├── login.html
+    │   │       └── register.html
     │   ├── urls.py
     │   ├── utils
     │   │   ├── analysis_engine.py
@@ -46,8 +110,8 @@ D:\FYP
     │   │   ├── data_preprocessing.py
     │   │   ├── ml_predictor.py
     │   │   └── pcap_to_csv.py
+    │   └── views.py
     ├── IDS_Project
-    │   ├── __init__.py
     │   ├── asgi.py
     │   ├── settings.py
     │   ├── urls.py
