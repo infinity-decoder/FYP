@@ -12,9 +12,10 @@ FYP
 │   └── raw
 │       └── attack_traffic_01.pcapng
 ├── docs
-│   ├── DD_F24PROJECTA686A (BC210427835).pdf
-    ├── DD_F24PROJECTA686A (BC210427835).pdf
 │   ├── SRS_F24PROJECTA686A (BC210427835).pdf
+    ├── DD_F24PROJECTA686A (BC210427835).pdf
+    ├── Report_BC210427835_F24PROJECTA686A_CS619_10069.docx
+│   ├── PPT_BC210427835_F24PROJECTA686A_CS619_10069.pptx
 │   └── project_documentation.md
 ├── folder_structure.txt
 ├── image.png
