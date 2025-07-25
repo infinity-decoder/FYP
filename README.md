@@ -49,7 +49,7 @@ Visit `/docs/project_documentation.md` For details.
 
 
 
-### **. Common Git Commands for Future Use**
+### ** Common Git Commands Used **
 | Command | Description |
 |---------|------------|
 | `git status` | Check repo status (modified, staged, committed files) |
