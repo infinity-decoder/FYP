@@ -18,3 +18,7 @@ notebook==7.3.2
 pyshark==0.6
 openpyxl==3.1.5
 joblib==1.4.2
+gunicorn
+django
+whitenoise  # for static files
+psycopg2-binary  # for Postgres
